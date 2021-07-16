@@ -1,0 +1,311 @@
+ program ::= extern_list decl_list 
+          | decl_list
+  extern_list ::= extern extern_list_end
+  extern_list_end ::= extern extern_list_end
+                   | epsilon
+  extern ::= "extern" type_spec IDENT "(" params ")" ";"
+  decl_list ::= decl decl_list
+              | epsilon
+  decl ::= var_decl 
+        |  fun_decl
+  var_decl ::= var_type IDENT ";" 
+  type_spec ::= "void"
+             |  var_type           
+  var_type  ::= "int" |  "float" |  "bool"
+  fun_decl ::= type_spec IDENT "(" params ")" block
+  params ::= param_list  
+          |  "void" | epsilon
+  param_list ::= param param_list_end
+  param_list_end ::= "," param param_list_end
+              | epsilon
+  param ::= var_type IDENT
+  block ::= "{" local_decls stmt_list "}"
+  local_decls ::= local_decl local_decls
+               |  epsilon
+  local_decl ::= var_type IDENT ";"
+  stmt_list ::= stmt stmt_list
+             |  epsilon
+  stmt ::= expr_stmt 
+        |  block 
+        |  if_stmt 
+        |  while_stmt 
+        |  return_stmt
+  expr_stmt ::= expr ";" 
+             |  ";"
+  paren_expr = "(" expr ")"
+  while_stmt ::= "while" paren_expr stmt
+  if_stmt ::= "if" paren_expr block else_stmt
+  else_stmt  ::= "else" block
+              |  epsilon
+  return_stmt ::= "return" ";" 
+               |  "return" expr ";"               
+  # operators in order of increasing precedence      
+  expr ::= IDENT "=" expr
+        | rval
+  rval ::= rval_conjunction rval_end
+  rval_end ::= "||" rval_conjunction rval_end
+            | epsilon
+  rval_conjunction ::= rval_equality rval_conjunction_end
+  rval_conjunction_end ::= "&&" rval_equality
+                        | epsilon
+  rval_equality ::= rval_inequality rval_equality_end 
+  rval_equality_end ::= "==" rval_inequality rval_equality_end
+                     | "!=" rval_inequality rval_equality_end
+                     | epsilon
+  rval_inequality ::= rval_addition rval_inequality_end
+  rval_inequality_end ::= "<=" rval_addition rval_inequality_end
+                        | "<" rval_addition rval_inequality_end
+                        | ">=" rval_addition rval_inequality_end
+                        | ">" rval_addition rval_inequality_end
+                        | epsilon
+  rval_addition ::= rval_multiplication rval_addition_end
+  rval_addition_end ::= "+" rval_multiplication rval_addition_end
+                     | "-" rval_multiplication rval_addition_end
+                     | epsilon
+  rval_multiplication ::= rval_term rval_multiplication_end
+  rval_multiplication_end ::= "*" rval_term rval_multiplication_end
+                           | "/" rval_term rval_multiplication_end
+                           | "%" rval_term rval_multiplication_end
+                           | epsilon
+  rval_term ::= neg_term
+             | not_term
+             | paren_expr
+             | IDENT
+             | IDENT "(" args ")"
+             | INT_LIT
+             | FLOAT_LIT
+             | BOOL_LIT
+  not_term ::= "!" rval
+  neg_term ::= "-" rval
+  args ::= arg_list 
+        |  epsilon
+  arg_list ::= expr arg_list_end
+  arg_list_end ::= "," expr arg_list_end | epsilon
+
+
+
+  ////////////////////////////////////////////////////////
+ ///FIRST////FIRST////FIRST////FIRST////FIRST////FIRST///
+////////////////////////////////////////////////////////
+
+FIRST(arg_list_end) = {",", epsilon}
+FIRST(not_term) = {"!"}
+FIRST(neg_term) = {"-"}
+FIRST(paren_expr) = {"("} 
+FIRST(expr) = IDENT union FIRST(rval) = {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT}
+FIRST(arg_list) = FIRST(expr) = {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT}
+FIRST(args) = FIRST(arg_list) union {epsilon} = {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT, epsilon}
+FIRST(rval) = FIRST(rval_conjunction) = {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT}
+FIRST(rval_conjunction) = FIRST(rval_equality) = {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT}
+FIRST(rval_equality) = FIRST(rval_inequality) = {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT} 
+FIRST(rval_inequality) = FIRST(rval_addition) = {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT}
+FIRST(rval_addition) = FIRST(rval_multiplication) = {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT}
+FIRST(rval_multiplication) = FIRST(rval_term) = {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT}
+FIRST(rval_term) = FIRST(not_term) union FIRST(neg_term) union FIRST(paren_expr) {IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT} = {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT}
+FIRST(rval_end) = {"||", epsilon}
+FIRST(rval_conjunction_end) = {"&&", epsilon}
+FIRST(rval_equality_end) = {"==", "!=", epsilon}
+FIRST(rval_inequality_end) = {"<=", "<", ">=", ">", epsilon}
+FIRST(rval_addition_end) = {"+", "-", epsilon}
+FIRST(rval_multiplication_end) = {"*", "/", "%", epsilon}
+FIRST(return_stmt) = {"return"}
+FIRST(while_stmt) = {"while"}
+FIRST(if_stmt) = {"if"}
+FIRST(else_stmt) = {"else", epsilon}
+FIRST(extern) = "extern"
+FIRST(var_type) = {"int", "float", "bool"}
+FIRST(extern_list) = FIRST(extern) = {"extern"}
+FIRST(extern_list_end) = FIRST(extern) union {epsilon} = {"extern", epsilon}
+FIRST(type_spec) = {"void"} union FIRST(var_type) = {"void", "int", "float", "bool"}
+FIRST(var_decl) = FIRST(var_type) = {"int", "float", "bool"}
+FIRST(fun_decl) = FIRST(type_spec) = {"void", "int", "float", "bool"}
+FIRST(decl) = FIRST(var_decl) union FIRST(fun_decl) = {"void", "int", "float", "bool"}
+FIRST(decl_list) = FIRST(decl) union {epsilon} = {"void", "int", "float", "bool", epsilon}
+FIRST(program) = FIRST(extern_list) union FIRST(decl_list) = {"extern", "void", "int", "float", "bool", epsilon}
+FIRST(param_list_end) = {",", epsilon}
+FIRST(block) = {"{"}
+FIRST(param) = FIRST(var_type) = {"int", "float", "bool"}
+FIRST(param_list) = FIRST(param) = {"int", "float", "bool"}
+FIRST(params) = FIRST(param_list) union {"void", epsilon} = {"int", "float", "bool", "void", epsilon}
+FIRST(local_decl) = FIRST(var_type) = {"int", "float", "bool"}
+FIRST(local_decls) = FIRST(local_decl) union {epsilon} = {"int", "float", "bool", epsilon}
+FIRST(expr_stmt) = FIRST(expr) union ";" = {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT, ";"}
+FIRST(stmt) =  FIRST(expr_stmt) union FIRST(block) union FIRST(if_stmt) union FIRST(while_stmt) union FIRST(return_stmt) union = {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT, ";", "{", "if", "while", "return"}
+FIRST(stmt_list) = FIRST(stmt) union epsilon = {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT, ";", "{", "if", "while", "return", epsilon}
+
+
+
+  ///////////////////////////////////////////////////////////////////////////
+ //FOLLOW//FOLLOW//FOLLOW//FOLLOW//FOLLOW//FOLLOW//FOLLOW//FOLLOW//FOLLOW///
+///////////////////////////////////////////////////////////////////////////
+
+FOLLOW(program)
+= {EOF}
+
+FOLLOW(extern_list)
+= FIRST(decl_list) \ {epsilon}
+= {"void", "int", "float", "bool"}
+
+FOLLOW(decl_list)
+= FOLLOW(program)
+= {EOF}
+
+FOLLOW(extern_list_end)
+= FOLLOW(extern_list)
+= {"void", "int", "float", "bool"}
+
+FOLLOW(extern)
+= FOLLOW(extern_list) U FOLLOW(extern_list_end)
+= {"void", "int", "float", "bool"}
+
+FOLLOW(decl)
+= (FIRST(decl_list)\{epsilon}) U FOLLOW(decl_list)
+= {"void", "int", "float", "bool", EOF}
+
+FOLLOW(var_decl)
+= FOLLOW(decl)
+= {"void", "int", "float", "bool", EOF}
+
+FOLLOW(fun_decl)
+= FOLLOW(decl)
+= {"void", "int", "float", "bool", EOF}
+
+FOLLOW(type_spec)
+= {IDENT}
+
+FOLLOW(params)
+= {")"}
+
+FOLLOW(var_type)
+= {IDENT} U FOLLOW(type_spec)
+= {IDENT}
+
+FOLLOW(block)
+= FOLLOW(fun_decl) U FOLLOW(stmt) U FOLLOW(if_stmt) U (FIRST(else_stmt) \ {epsilon})
+= {"void", "int", "float", "bool", EOF, "!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT, ";", "{", "if", "while", "return", "else"}
+
+FOLLOW(param_list)
+= FOLLOW(params)
+= {")"}
+
+FOLLOW(param_list_end)
+= FOLLOW(param_list)
+= {")"}
+
+FOLLOW(param)
+= (FIRST(param_list_end) \ {epsilon}) U FOLLOW(param_list)
+= {",", ")"}
+
+FOLLOW(local_decls)
+= (FIRST(stmt_list) \ {epsilon}) U {"}"}
+= {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT, ";", "{", "if", "while", "return", "}"}
+
+FOLLOW(stmt_list)
+= {"}"}
+
+FOLLOW(local_decl)
+= FOLLOW(local_decls)
+= {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT, ";", "{", "if", "while", "return", "}"}
+
+FOLLOW(stmt)
+= (FIRST(stmt_list) \ {epsilon})
+= {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT, ";", "{", "if", "while", "return"}
+
+FOLLOW(if_stmt)
+= FOLLOW(stmt)
+= {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT, ";", "{", "if", "while", "return"}
+
+FOLLOW(expr_stmt)
+= FOLLOW(stmt)
+= {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT, ";", "{", "if", "while", "return"}
+
+FOLLOW(while_stmt)
+= FOLLOW(stmt)
+= {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT, ";", "{", "if", "while", "return"}
+
+FOLLOW(return_stmt)
+= FOLLOW(stmt)
+= {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT, ";", "{", "if", "while", "return"}
+
+FOLLOW(expr)
+= {";", ")"} U (FIRST(arg_list_end) \ {epsilon}) FOLLOW(arg_list)
+= {";", ")", ","}
+
+FOLLOW(paren_expr)
+= FIRST(stmt) U FIRST(block)
+= {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT, ";", "{", "if", "while", "return"}
+
+FOLLOW(else_stmt)
+= FOLLOW(if_stmt)
+= {"!", "-", "(", IDENT, INT_LIT, FLOAT_LIT, BOOL_LIT, ";", "{", "if", "while", "return"}
+
+FOLLOW(rval)
+= FOLLOW(expr) U FOLLOW(not_term) U FOLLOW(neg_term)
+= {";", ")", ","}
+
+FOLLOW(rval_conjunction)
+= (FIRST(rval_end)\{epsilon}) U FOLLOW(rval)
+= {"&&", "||", ";", ")", ","}
+
+FOLLOW(rval_end)
+= FOLLOW(rval)
+= {";", ")", ","}
+
+FOLLOW(rval_equality)
+= {FIRST(rval_conjunction_end) \ {epsilon}} U FOLLOW(rval_conjunction)
+= {"&&", "||", ";", ")", ","}
+
+FOLLOW(rval_equality_end)
+= FOLLOW(rval_equality)
+= {"&&", "||", ";", ")", ","}
+
+FOLLOW(rval_conjunction_end)
+= FOLLOW(rval_conjunction)
+= {"&&", "||", ";", ")", ","}
+
+FOLLOW(rval_inequality)
+= (FIRST(rval_equality_end) \ {epsilon}) U FOLLOW(rval_equality) U FOLLOW(rval_equality_end)
+= {"==", "!=", "&&", "||", ";", ")", ","}
+
+FOLLOW(rval_inequality_end)
+= FOLLOW(rval_inequality)
+= {"==", "!=", "&&", "||", ";", ")", ","}
+
+FOLLOW(rval_addition)
+= (FIRST(rval_inequality_end) \ {epsilon}) U FOLLOW(rval_inequality)
+= {"<=", "<", ">=", ">", "==", "!=", "&&", "||", ";", ")", ","}
+
+FOLLOW(rval_addition_end)
+= FOLLOW(rval_addition)
+= {"<=", "<", ">=", ">", "==", "!=", "&&", "||", ";", ")", ","}
+
+FOLLOW(rval_multiplication)
+= (FIRST(rval_addition_end) \ {epsilon}) U FOLLOW(rval_addition)
+= {"+", "-", "<=", "<", ">=", ">", "==", "!=", "&&", "||", ";", ")", ","}
+
+FOLLOW(rval_multiplication_end)
+= FOLLOW(rval_multiplication) 
+= {"+", "-", "<=", "<", ">=", ">", "==", "!=", "&&", "||", ";", ")", ","}
+
+FOLLOW(rval_term)
+= (FIRST(rval_multiplication_end)\{epsilon}) U FOLLOW(rval_multiplication)
+= {"*", "/", "%", "+", "-", "<=", "<", ">=", ">", "==", "!=", "&&", "||", ";", ")", ","}
+
+FOLLOW(neg_term)
+= FOLLOW(rval_term)
+= {"*", "/", "%", "+", "-", "<=", "<", ">=", ">", "==", "!=", "&&", "||", ";", ")", ","}
+
+FOLLOW(not_term)
+= FOLLOW(rval_term)
+= {"*", "/", "%", "+", "-", "<=", "<", ">=", ">", "==", "!=", "&&", "||", ";", ")", ","}
+
+FOLLOW(args)
+= {")"}
+
+FOLLOW(arg_list)
+= FOLLOW(args)
+= {")"}
+
+FOLLOW(arg_list_end)
+= FOLLOW(arg_list)
+= {")"}
