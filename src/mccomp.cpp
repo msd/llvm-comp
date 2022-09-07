@@ -10,6 +10,20 @@
 using namespace llvm;
 using namespace llvm::sys;
 
+using std::cerr;
+using std::cout;
+using std::cout;
+using std::deque;
+using std::endl;
+using std::exception;
+using std::make_unique;
+using std::map;
+using std::move;
+using std::stack;
+using std::string;
+using std::unique_ptr;
+using std::vector;
+
 FILE *pFile;
 
 // todo type checking conforming i.e. integers + floating point -> float + float (coercion)s|
@@ -83,19 +97,19 @@ enum TOKEN_TYPE
 struct TOKEN
 {
 	int         type = -100;
-	std::string lexeme;
+	string lexeme;
 	int         lineNo;
 	int         columnNo;
 };
 
-static std::string IdentifierStr; // Filled in if IDENT
+static string IdentifierStr; // Filled in if IDENT
 static int         IntVal;        // Filled in if INT_LIT
 static bool        BoolVal;       // Filled in if BOOL_LIT
 static float       FloatVal;      // Filled in if FLOAT_LIT
-static std::string StringVal;     // Filled in if String Literal
+static string StringVal;     // Filled in if String Literal
 static int         lineNo, columnNo;
 
-static TOKEN returnTok(std::string lexVal, int tok_type)
+static TOKEN returnTok(string lexVal, int tok_type)
 {
 	TOKEN return_tok;
 
@@ -248,7 +262,7 @@ static TOKEN gettok()
 
 	if (isdigit(LastChar) || (LastChar == '.'))      // Number: [0-9]+.
 	{
-		std::string NumStr;
+		string NumStr;
 
 		if (LastChar == '.')             // Floatingpoint Number: .[0-9]+
 		{
@@ -408,7 +422,7 @@ static TOKEN gettok()
 
 	// Otherwise, just return the character as its ascii value.
 	int         ThisChar = LastChar;
-	std::string s(1, ThisChar);
+	string s(1, ThisChar);
 
 	LastChar = getc(pFile);
 	columnNo++;
@@ -424,7 +438,7 @@ static TOKEN gettok()
 /// token the parser is looking at.  getNextToken reads another token from the
 /// lexer and updates CurTok with its results.
 static TOKEN             CurTok;
-static std::deque<TOKEN> tok_buffer;
+static deque<TOKEN> tok_buffer;
 
 static TOKEN getNextToken()
 {
@@ -457,30 +471,30 @@ const char BOOL_TYPE    = 2;
 const char FLOAT_TYPE   = 1;
 const char VOID_TYPE    = 4;
 
-static std::string type_to_str(const char type);
+static string type_to_str(const char type);
 
 /// ASTnode - Base class for all AST nodes.
 class ASTnode
 {
 public:
-	std::vector<std::unique_ptr<ASTnode> > children{};
+	vector<unique_ptr<ASTnode> > children{};
 	virtual Value *codegen() = 0;
-	virtual const std::string node_type() const = 0;
+	virtual const string node_type() const = 0;
 
-	virtual std::string to_string() const
+	virtual string to_string() const
 	{
 		return node_type() + " node with " + std::to_string(children.size()) + " child(ren)";
 	}
 
 	virtual ~ASTnode() {}
-	virtual void addSub(std::unique_ptr<ASTnode> subExpr)
+	virtual void addSub(unique_ptr<ASTnode> subExpr)
 	{
-		children.push_back(std::move(subExpr));
+		children.push_back(move(subExpr));
 	}
 
-	void setSubs(std::vector<std::unique_ptr<ASTnode> > subs)
+	void setSubs(vector<unique_ptr<ASTnode> > subs)
 	{
-		children = std::move(subs);
+		children = move(subs);
 	}
 
 	ASTnode *getSub(int i)
@@ -492,7 +506,7 @@ public:
 class ExternListNode : public ASTnode
 {
 public:
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "EXTERN LIST";
 	}
@@ -504,7 +518,7 @@ public:
 class NullStmt : public ASTnode
 {
 public:
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "NULL STMT";
 	}
@@ -515,7 +529,7 @@ public:
 
 class DeclNode : public ASTnode
 {
-	virtual const std::string node_type() const = 0;
+	virtual const string node_type() const = 0;
 };
 
 class VariableScope;
@@ -524,17 +538,17 @@ class VarDeclNode : public DeclNode
 {
 public:
 	VariableScope *scope;
-	const std::string var_name;
+	const string var_name;
 	const char var_type;
 	const bool is_global;
-	VarDeclNode(VariableScope *scope, std::string var_name, const char var_type, bool is_global) : scope(scope), var_name(var_name), var_type(var_type), is_global(is_global) {}
+	VarDeclNode(VariableScope *scope, string var_name, const char var_type, bool is_global) : scope(scope), var_name(var_name), var_type(var_type), is_global(is_global) {}
 
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "VAR DECL";
 	}
 
-	virtual std::string to_string() const
+	virtual string to_string() const
 	{
 		return node_type() + " node NAME=" + var_name + " TYPE=" + type_to_str(var_type);
 	}
@@ -547,9 +561,9 @@ class semantic_error;
 class VariableScope
 {
 	VariableScope *inherited;
-	// std::map<std::string, Value *> local_decls{};
-	std::map<std::string, Value *> local_addrs{};
-	std::map<std::string, VarDeclNode *> local_decls{};
+	// map<string, Value *> local_decls{};
+	map<string, Value *> local_addrs{};
+	map<string, VarDeclNode *> local_decls{};
 	VariableScope(VariableScope *inherited) : inherited(inherited) {}
 public:
 	VariableScope() : inherited(nullptr) {}
@@ -557,29 +571,29 @@ public:
 	{
 		auto new_scope = new VariableScope(outer_scope);
 
-		return std::unique_ptr<VariableScope>{ new_scope };
+		return unique_ptr<VariableScope>{ new_scope };
 	}
 
-	auto hasLocalName(std::string var_name)
+	auto hasLocalName(string var_name)
 	{
 		return static_cast<bool>(local_decls.count(var_name));
 	}
 
-	bool hasName(std::string var_name)
+	bool hasName(string var_name)
 	{
 		if (!(hasLocalName(var_name) || (inherited && inherited->hasName(var_name))))
 		{
-			std::cout << "DECL LOOKUP FAILED: " << var_name << std::endl;
+			cout << "DECL LOOKUP FAILED: " << var_name << endl;
 		}
 		return hasLocalName(var_name) || (inherited && inherited->hasName(var_name));
 	}
 
-	void setAddr(std::string var_name, Value *addr);
+	void setAddr(string var_name, Value *addr);
 
-	void setDecl(std::string var_name, VarDeclNode *decl);
+	void setDecl(string var_name, VarDeclNode *decl);
 
 	// todo check calls to getDecl can be substituted for hasLocalName
-	VarDeclNode *getDecl(std::string identifier)
+	VarDeclNode *getDecl(string identifier)
 	{
 		if (local_decls.count(identifier))
 		{
@@ -592,7 +606,7 @@ public:
 		return nullptr;
 	}
 
-	bool hasAddr(std::string var_name)
+	bool hasAddr(string var_name)
 	{
 		if (hasLocalName(var_name))
 		{
@@ -605,13 +619,13 @@ public:
 		return false;
 	}
 
-	Value *getAddr(std::string var_name);
+	Value *getAddr(string var_name);
 };
 
 class BlockNode : public ASTnode
 {
 private:
-	std::unique_ptr<VariableScope> _scope;
+	unique_ptr<VariableScope> _scope;
 public:
 	VariableScope *scope;
 
@@ -625,7 +639,7 @@ public:
 		return children[1].get();
 	}
 
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "BLOCK";
 	}
@@ -646,15 +660,15 @@ class IfStmt : public ASTnode
 public:
 	ExprNode *cond;
 	BlockNode *then_body;
-	IfStmt(std::unique_ptr<ASTnode> if_cond, std::unique_ptr<ASTnode> if_body)
+	IfStmt(unique_ptr<ASTnode> if_cond, unique_ptr<ASTnode> if_body)
 	{
-		addSub(std::move(if_cond));
-		addSub(std::move(if_body));
+		addSub(move(if_cond));
+		addSub(move(if_body));
 		cond      = dynamic_cast<ExprNode *>(children[0].get());
 		then_body = dynamic_cast<BlockNode *>(children[1].get());
 	}
 
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "IF STMT";
 	}
@@ -667,17 +681,17 @@ class IfWithElseNode : public ASTnode
 public:
 	ExprNode *cond;
 	BlockNode *then_body, *else_body;
-	IfWithElseNode(std::unique_ptr<ASTnode> if_cond, std::unique_ptr<ASTnode> then_body, std::unique_ptr<ASTnode> else_body)
+	IfWithElseNode(unique_ptr<ASTnode> if_cond, unique_ptr<ASTnode> then_body, unique_ptr<ASTnode> else_body)
 	{
-		addSub(std::move(if_cond));
-		addSub(std::move(then_body));
-		addSub(std::move(else_body));
+		addSub(move(if_cond));
+		addSub(move(then_body));
+		addSub(move(else_body));
 		cond            = dynamic_cast<ExprNode *>(children[0].get());
 		this->then_body = dynamic_cast<BlockNode *>(children[1].get());
 		this->else_body = dynamic_cast<BlockNode *>(children[2].get());
 	}
 
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "IF WITH ELSE STMT";
 	}
@@ -690,7 +704,7 @@ class RvalNode : public ExprNode
 public:
 	virtual ~RvalNode() {}
 	virtual char expr_type() = 0;
-	virtual const std::string node_type() const = 0;
+	virtual const string node_type() const = 0;
 	virtual Value *codegen() = 0;
 };
 
@@ -698,9 +712,9 @@ public:
 class ParenExprNode : public RvalNode
 {
 public:
-	ParenExprNode(std::unique_ptr<ASTnode> expr)
+	ParenExprNode(unique_ptr<ASTnode> expr)
 	{
-		children.push_back(std::move(expr));
+		children.push_back(move(expr));
 	}
 
 	RvalNode *expr()
@@ -708,7 +722,7 @@ public:
 		return dynamic_cast<RvalNode *>(children[0].get());
 	}
 
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "PAREN EXPR";
 	}
@@ -725,10 +739,10 @@ public:
 class WhileStmt : public ASTnode
 {
 public:
-	WhileStmt(std::unique_ptr<ASTnode> condition, std::unique_ptr<ASTnode> loop_body)
+	WhileStmt(unique_ptr<ASTnode> condition, unique_ptr<ASTnode> loop_body)
 	{
-		children.push_back(std::move(condition));
-		children.push_back(std::move(loop_body));
+		children.push_back(move(condition));
+		children.push_back(move(loop_body));
 	}
 
 	ASTnode *condition()
@@ -741,7 +755,7 @@ public:
 		return children[1].get();
 	}
 
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "WHILE STMT";
 	}
@@ -760,12 +774,12 @@ public:
 		*data = litVal;
 	}
 
-	virtual std::string data_str() const
+	virtual string data_str() const
 	{
 		return std::to_string(*data);
 	}
 
-	virtual std::string to_string() const
+	virtual string to_string() const
 	{
 		return node_type() + "=" + data_str();
 	}
@@ -783,7 +797,7 @@ class IntNode : public LitNode<int>
 {
 public:
 	IntNode(int litVal) : LitNode<int>(litVal) {}
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "INT_LIT";
 	}
@@ -814,7 +828,7 @@ public:
 		return *static_cast<bool *>(data);
 	}
 
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "BOOL_LIT";
 	}
@@ -842,12 +856,12 @@ class FloatNode : public LitNode<float>
 {
 public:
 	FloatNode(float litVal) : LitNode<float>(litVal) {}
-	virtual std::string to_string() const
+	virtual string to_string() const
 	{
 		return node_type() + "=" + std::to_string(*static_cast<float *>(data));
 	}
 
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "FLOAT_LIT";
 	}
@@ -868,7 +882,7 @@ public:
 class LocalDeclsNode : public ASTnode
 {
 public:
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "LOCAL DECLS";
 	}
@@ -879,7 +893,7 @@ public:
 class StmtListNode : public ASTnode
 {
 public:
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "STMTS";
 	}
@@ -890,9 +904,9 @@ public:
 class NegationNode : public RvalNode
 {
 public:
-	NegationNode(std::unique_ptr<ASTnode> rval)
+	NegationNode(unique_ptr<ASTnode> rval)
 	{
-		addSub(std::move(rval));
+		addSub(move(rval));
 	}
 
 	RvalNode *negatee()
@@ -900,7 +914,7 @@ public:
 		return dynamic_cast<RvalNode *>(children[0].get());
 	}
 
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "NEG";
 	}
@@ -923,14 +937,14 @@ public:
 class FunCallNode : public RvalNode
 {
 public:
-	const std::string fun_name;
-	FunCallNode(std::string fun_name) : fun_name(fun_name) {}
-	virtual const std::string node_type() const
+	const string fun_name;
+	FunCallNode(string fun_name) : fun_name(fun_name) {}
+	virtual const string node_type() const
 	{
 		return "FUNCTION CALL";
 	}
 
-	virtual std::string to_string() const
+	virtual string to_string() const
 	{
 		return node_type() + " node CALLEE=" + fun_name;
 	}
@@ -944,9 +958,9 @@ public:
 class NotNode : public RvalNode
 {
 public:
-	NotNode(std::unique_ptr<ASTnode> sub)
+	NotNode(unique_ptr<ASTnode> sub)
 	{
-		addSub(std::move(sub));
+		addSub(move(sub));
 	}
 
 	RvalNode *negatee()
@@ -954,7 +968,7 @@ public:
 		return dynamic_cast<RvalNode *>(children[0].get());
 	}
 
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "NOT";
 	}
@@ -970,10 +984,10 @@ public:
 class OperatorNode : public RvalNode
 {
 public:
-	OperatorNode(std::unique_ptr<ASTnode> lhs, std::unique_ptr<ASTnode> rhs)
+	OperatorNode(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
 	{
-		children.push_back(std::move(lhs));
-		children.push_back(std::move(rhs));
+		children.push_back(move(lhs));
+		children.push_back(move(rhs));
 	}
 
 	RvalNode *lhs()
@@ -986,7 +1000,7 @@ public:
 		return dynamic_cast<RvalNode *>(children[1].get());
 	}
 
-	virtual std::string to_string() const
+	virtual string to_string() const
 	{
 		return node_type() + " node with 2 children";
 	}
@@ -995,10 +1009,10 @@ public:
 class DisCon : public RvalNode
 {
 public:
-	std::vector<std::unique_ptr<ASTnode> > clauses;
-	void addClause(std::unique_ptr<ASTnode> clause)
+	vector<unique_ptr<ASTnode> > clauses;
+	void addClause(unique_ptr<ASTnode> clause)
 	{
-		clauses.push_back(std::move(clause));
+		clauses.push_back(move(clause));
 	}
 
 	virtual char expr_type()
@@ -1010,7 +1024,7 @@ public:
 class ConjunctionNode : public DisCon
 {
 public:
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "CONJUNCTION";
 	}
@@ -1021,7 +1035,7 @@ public:
 class DisjunctionNode : public DisCon
 {
 public:
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "DISJUNCTION";
 	}
@@ -1032,9 +1046,9 @@ public:
 class OpADD : public OperatorNode
 {
 public:
-	OpADD(std::unique_ptr<ASTnode> lhs, std::unique_ptr<ASTnode> rhs)
-		: OperatorNode(std::move(lhs), std::move(rhs)) {}
-	virtual const std::string node_type() const
+	OpADD(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+		: OperatorNode(move(lhs), move(rhs)) {}
+	virtual const string node_type() const
 	{
 		return "ADDITION OPERATOR";
 	}
@@ -1056,9 +1070,9 @@ public:
 class OpMULT : public OperatorNode
 {
 public:
-	OpMULT(std::unique_ptr<ASTnode> lhs, std::unique_ptr<ASTnode> rhs)
-		: OperatorNode(std::move(lhs), std::move(rhs)) {}
-	virtual const std::string node_type() const
+	OpMULT(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+		: OperatorNode(move(lhs), move(rhs)) {}
+	virtual const string node_type() const
 	{
 		return "MULTIPLICATION OPERATOR";
 	}
@@ -1080,9 +1094,9 @@ public:
 class OpDIV : public OperatorNode
 {
 public:
-	OpDIV(std::unique_ptr<ASTnode> lhs, std::unique_ptr<ASTnode> rhs)
-		: OperatorNode(std::move(lhs), std::move(rhs)) {}
-	virtual const std::string node_type() const
+	OpDIV(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+		: OperatorNode(move(lhs), move(rhs)) {}
+	virtual const string node_type() const
 	{
 		return "DIVISION OPERATOR";
 	}
@@ -1104,9 +1118,9 @@ public:
 class OpMODULO : public OperatorNode
 {
 public:
-	OpMODULO(std::unique_ptr<ASTnode> lhs, std::unique_ptr<ASTnode> rhs)
-		: OperatorNode(std::move(lhs), std::move(rhs)) {}
-	virtual const std::string node_type() const
+	OpMODULO(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+		: OperatorNode(move(lhs), move(rhs)) {}
+	virtual const string node_type() const
 	{
 		return "MODULO OPERATOR";
 	}
@@ -1122,9 +1136,9 @@ public:
 class OpSUB : public OperatorNode
 {
 public:
-	OpSUB(std::unique_ptr<ASTnode> lhs, std::unique_ptr<ASTnode> rhs)
-		: OperatorNode(std::move(lhs), std::move(rhs)) {}
-	virtual const std::string node_type() const
+	OpSUB(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+		: OperatorNode(move(lhs), move(rhs)) {}
+	virtual const string node_type() const
 	{
 		return "SUBTRACTION OPERATOR";
 	}
@@ -1146,9 +1160,9 @@ public:
 class EqualityNode : public OperatorNode
 {
 public:
-	EqualityNode(std::unique_ptr<ASTnode> lhs, std::unique_ptr<ASTnode> rhs)
-		: OperatorNode(std::move(lhs), std::move(rhs)) {}
-	virtual const std::string node_type() const = 0;
+	EqualityNode(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+		: OperatorNode(move(lhs), move(rhs)) {}
+	virtual const string node_type() const = 0;
 
 	virtual char expr_type()
 	{
@@ -1159,9 +1173,9 @@ public:
 class InequalityNode : public OperatorNode
 {
 public:
-	InequalityNode(std::unique_ptr<ASTnode> lhs, std::unique_ptr<ASTnode> rhs)
-		: OperatorNode(std::move(lhs), std::move(rhs)) {}
-	virtual const std::string node_type() const = 0;
+	InequalityNode(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+		: OperatorNode(move(lhs), move(rhs)) {}
+	virtual const string node_type() const = 0;
 
 	virtual char expr_type()
 	{
@@ -1172,9 +1186,9 @@ public:
 class OpEQ : public EqualityNode
 {
 public:
-	OpEQ(std::unique_ptr<ASTnode> lhs, std::unique_ptr<ASTnode> rhs)
-		: EqualityNode(std::move(lhs), std::move(rhs)) {}
-	virtual const std::string node_type() const
+	OpEQ(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+		: EqualityNode(move(lhs), move(rhs)) {}
+	virtual const string node_type() const
 	{
 		return "EQUALS OPERATOR";
 	}
@@ -1185,9 +1199,9 @@ public:
 class OpNE : public EqualityNode
 {
 public:
-	OpNE(std::unique_ptr<ASTnode> lhs, std::unique_ptr<ASTnode> rhs)
-		: EqualityNode(std::move(lhs), std::move(rhs)) {}
-	virtual const std::string node_type() const
+	OpNE(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+		: EqualityNode(move(lhs), move(rhs)) {}
+	virtual const string node_type() const
 	{
 		return "NOT EQUALS OPERATOR";
 	}
@@ -1198,9 +1212,9 @@ public:
 class OpLE : public InequalityNode
 {
 public:
-	OpLE(std::unique_ptr<ASTnode> lhs, std::unique_ptr<ASTnode> rhs)
-		: InequalityNode(std::move(lhs), std::move(rhs)) {}
-	virtual const std::string node_type() const
+	OpLE(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+		: InequalityNode(move(lhs), move(rhs)) {}
+	virtual const string node_type() const
 	{
 		return "LESS OR EQUAL OPERATOR";
 	}
@@ -1211,9 +1225,9 @@ public:
 class OpLT : public InequalityNode
 {
 public:
-	OpLT(std::unique_ptr<ASTnode> lhs, std::unique_ptr<ASTnode> rhs)
-		: InequalityNode(std::move(lhs), std::move(rhs)) {}
-	virtual const std::string node_type() const
+	OpLT(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+		: InequalityNode(move(lhs), move(rhs)) {}
+	virtual const string node_type() const
 	{
 		return "LESS THAN OPERATOR";
 	}
@@ -1224,9 +1238,9 @@ public:
 class OpGE : public InequalityNode
 {
 public:
-	OpGE(std::unique_ptr<ASTnode> lhs, std::unique_ptr<ASTnode> rhs)
-		: InequalityNode(std::move(lhs), std::move(rhs)) {}
-	virtual const std::string node_type() const
+	OpGE(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+		: InequalityNode(move(lhs), move(rhs)) {}
+	virtual const string node_type() const
 	{
 		return "GREATER OR EQUAL OPERATOR";
 	}
@@ -1237,9 +1251,9 @@ public:
 class OpGT : public InequalityNode
 {
 public:
-	OpGT(std::unique_ptr<ASTnode> lhs, std::unique_ptr<ASTnode> rhs)
-		: InequalityNode(std::move(lhs), std::move(rhs)) {}
-	virtual const std::string node_type() const
+	OpGT(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+		: InequalityNode(move(lhs), move(rhs)) {}
+	virtual const string node_type() const
 	{
 		return "GREATER THAN OPERATOR";
 	}
@@ -1250,15 +1264,15 @@ public:
 class ParamNode : public ASTnode
 {
 public:
-	const std::string name;
+	const string name;
 	const char type;
-	ParamNode(std::string name, const char type) : name(name), type(type) {}
-	virtual const std::string node_type() const
+	ParamNode(string name, const char type) : name(name), type(type) {}
+	virtual const string node_type() const
 	{
 		return "PARAM";
 	}
 
-	virtual std::string to_string() const
+	virtual string to_string() const
 	{
 		return node_type() + " node NAME=" + name + ", TYPE=" + type_to_str(type);
 	}
@@ -1280,7 +1294,7 @@ public:
 		return children.size();
 	}
 
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "PARAMS";
 	}
@@ -1291,25 +1305,25 @@ public:
 class FunctionSignature : public ASTnode
 {
 public:
-	std::string name;
+	string name;
 	const char return_type;
-	FunctionSignature(std::string name, const char return_type, std::unique_ptr<ASTnode> params);
+	FunctionSignature(string name, const char return_type, unique_ptr<ASTnode> params);
 	ParamsNode *params()
 	{
 		return dynamic_cast<ParamsNode *>(children[0].get());
 	}
 
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "FUNCTION SIGNATURE";
 	}
 
-	virtual std::string return_node_type()
+	virtual string return_node_type()
 	{
 		return type_to_str(return_type);
 	}
 
-	virtual std::string to_string() const
+	virtual string to_string() const
 	{
 		return node_type() + " node RETURN=" + type_to_str(return_type);
 	}
@@ -1320,16 +1334,16 @@ public:
 class VarExprNode : public RvalNode
 {
 public:
-	const std::string name;
+	const string name;
 	const VarDeclNode *decl;
 	VariableScope *scope;
-	VarExprNode(VariableScope *scope, std::string name, VarDeclNode *decl) : name(name), decl(decl), scope(scope) {}
-	virtual const std::string node_type() const
+	VarExprNode(VariableScope *scope, string name, VarDeclNode *decl) : name(name), decl(decl), scope(scope) {}
+	virtual const string node_type() const
 	{
 		return "VAR EXPR";
 	}
 
-	virtual std::string to_string() const
+	virtual string to_string() const
 	{
 		return node_type() + " node NAME=" + name;
 	}
@@ -1346,10 +1360,10 @@ public:
 class FunDeclNode : public DeclNode
 {
 public:
-	FunDeclNode(std::unique_ptr<ASTnode> sig, std::unique_ptr<ASTnode> body)
+	FunDeclNode(unique_ptr<ASTnode> sig, unique_ptr<ASTnode> body)
 	{
-		children.push_back(std::move(sig));
-		children.push_back(std::move(body));
+		children.push_back(move(sig));
+		children.push_back(move(body));
 	}
 
 	FunctionSignature *sig() const
@@ -1362,12 +1376,12 @@ public:
 		return dynamic_cast<BlockNode *>(children[1].get());
 	}
 
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "FUN DECL";
 	}
 
-	virtual std::string to_string() const
+	virtual string to_string() const
 	{
 		return node_type() + " node NAME=" + sig()->name + " RETURN=" + type_to_str(sig()->return_type);
 	}
@@ -1378,7 +1392,7 @@ public:
 class DeclListNode : public ASTnode
 {
 public:
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "DECL LIST";
 	}
@@ -1391,15 +1405,15 @@ class ProgramNode : public ASTnode
 public:
 	ExternListNode *extern_list;
 	DeclListNode *decl_list;
-	ProgramNode(std::unique_ptr<ExternListNode> eln, std::unique_ptr<DeclListNode> dln)
+	ProgramNode(unique_ptr<ExternListNode> eln, unique_ptr<DeclListNode> dln)
 	{
-		children.push_back(std::move(eln));
-		children.push_back(std::move(dln));
+		children.push_back(move(eln));
+		children.push_back(move(dln));
 		extern_list = dynamic_cast<ExternListNode *>(children[0].get());
 		decl_list   = dynamic_cast<DeclListNode *>(children[1].get());
 	}
 
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "PROGRAM";
 	}
@@ -1410,14 +1424,14 @@ public:
 class AssignmentLHS : public ASTnode
 {
 public:
-	std::string var_to;
-	AssignmentLHS(std::string var_to) : var_to(var_to) {}
-	virtual const std::string node_type() const
+	string var_to;
+	AssignmentLHS(string var_to) : var_to(var_to) {}
+	virtual const string node_type() const
 	{
 		return "ASSISGNENT LHS";
 	}
 
-	virtual std::string to_string() const
+	virtual string to_string() const
 	{
 		return node_type() + " node TARGET_VAR=" + var_to;
 	}
@@ -1439,7 +1453,7 @@ public:
 		return dynamic_cast<ExprNode *>(children[1].get());
 	}
 
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "ASSIGNMENT STMT";
 	}
@@ -1449,14 +1463,14 @@ public:
 		return rhs()->expr_type();
 	}
 
-	AssignmentExpr(VariableScope *scope, std::unique_ptr<ASTnode> lhs, std::unique_ptr<ASTnode> rhs);
+	AssignmentExpr(VariableScope *scope, unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs);
 	virtual Value *codegen();
 };
 
 class ReturnNothingNode : public ASTnode
 {
 public:
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "RETURN NOTHING STMT";
 	}
@@ -1468,14 +1482,14 @@ class ReturnValueNode : public ASTnode
 {
 public:
 	ExprNode *expr;
-	ReturnValueNode(std::unique_ptr<ASTnode> expr)
+	ReturnValueNode(unique_ptr<ASTnode> expr)
 	{
-		children.push_back(std::move(expr));
+		children.push_back(move(expr));
 
 		this->expr = dynamic_cast<ExprNode *>(children[0].get());
 	}
 
-	virtual const std::string node_type() const
+	virtual const string node_type() const
 	{
 		return "RETURN VALUE STMT";
 	}
@@ -1485,14 +1499,14 @@ public:
 
 static LLVMContext             TheContext;
 static IRBuilder<>             Builder(TheContext);
-static std::unique_ptr<Module> TheModule;
-static std::map<std::string, FunctionSignature *> ExternedFunctions;
-static std::map<std::string, FunDeclNode *>       DefinedFunctions;
+static unique_ptr<Module> TheModule;
+static map<string, FunctionSignature *> ExternedFunctions;
+static map<string, FunDeclNode *>       DefinedFunctions;
 // Current scope is the last in the
-static std::stack<VariableScope *> ActiveScopes;
+static stack<VariableScope *> ActiveScopes;
 
-static std::unique_ptr<ASTnode> parse_stmt();
-static std::unique_ptr<ASTnode> parse_stmt_list();
+static unique_ptr<ASTnode> parse_stmt();
+static unique_ptr<ASTnode> parse_stmt_list();
 
 //===----------------------------------------------------------------------===//
 // Recursive Descent Parser - Function call for each production
@@ -1500,55 +1514,55 @@ static std::unique_ptr<ASTnode> parse_stmt_list();
 
 /* Add function calls for each production */
 
-class semantic_error : std::exception
+class semantic_error : exception
 {
-	std::string err_msg;
+	string err_msg;
 public:
 	const int lineNo, columnNo;
-	std::string erroneous_token;
-	semantic_error(std::string err_msg) : err_msg(std::move(err_msg)), lineNo(CurTok.lineNo), columnNo(CurTok.columnNo), erroneous_token(CurTok.lexeme) {}
-	semantic_error(std::string err_msg, int lineNo, int columnNo, std::string erroneous_token) : err_msg(std::move(err_msg)), lineNo(lineNo), columnNo(columnNo), erroneous_token(std::move(erroneous_token)) {}
+	string erroneous_token;
+	semantic_error(string err_msg) : err_msg(move(err_msg)), lineNo(CurTok.lineNo), columnNo(CurTok.columnNo), erroneous_token(CurTok.lexeme) {}
+	semantic_error(string err_msg, int lineNo, int columnNo, string erroneous_token) : err_msg(move(err_msg)), lineNo(lineNo), columnNo(columnNo), erroneous_token(move(erroneous_token)) {}
 	virtual const char *what() const throw()
 	{
 		return err_msg.c_str();
 	}
 };
 
-class syntax_error : std::exception
+class syntax_error : exception
 {
-	std::string err_msg;
+	string err_msg;
 public:
 	const int lineNo, columnNo;
-	std::string erroneous_token;
-	syntax_error(std::string err_msg) : err_msg(std::move(err_msg)), lineNo(CurTok.lineNo), columnNo(CurTok.columnNo), erroneous_token(CurTok.lexeme) {}
-	syntax_error(std::string err_msg, int lineNo, int columnNo, std::string erroneous_token) : err_msg(std::move(err_msg)), lineNo(lineNo), columnNo(columnNo), erroneous_token(std::move(erroneous_token)) {}
+	string erroneous_token;
+	syntax_error(string err_msg) : err_msg(move(err_msg)), lineNo(CurTok.lineNo), columnNo(CurTok.columnNo), erroneous_token(CurTok.lexeme) {}
+	syntax_error(string err_msg, int lineNo, int columnNo, string erroneous_token) : err_msg(move(err_msg)), lineNo(lineNo), columnNo(columnNo), erroneous_token(move(erroneous_token)) {}
 	virtual const char *what() const throw()
 	{
 		return err_msg.c_str();
 	}
 };
 
-class compiler_error : std::exception
+class compiler_error : exception
 // These should only happen if there's a change in the language specification.
 // They are not something that will be emitted but here just for completeness
 // sake. Happens when a token that wasn't expected is received.
 {
-	std::string err_msg;
+	string err_msg;
 public:
 	const int lineNo, columnNo;
-	std::string erroneous_token;
+	string erroneous_token;
 	compiler_error() : err_msg("Unknown compiler error"), lineNo(CurTok.lineNo), columnNo(CurTok.columnNo), erroneous_token(CurTok.lexeme) {}
-	compiler_error(std::string err_msg) : err_msg(std::move(err_msg)), lineNo(CurTok.lineNo), columnNo(CurTok.columnNo), erroneous_token(CurTok.lexeme) {}
-	compiler_error(std::string err_msg, int lineNo, int columnNo, std::string erroneous_token) : err_msg(std::move(err_msg)), lineNo(lineNo), columnNo(columnNo), erroneous_token(std::move(erroneous_token)) {}
+	compiler_error(string err_msg) : err_msg(move(err_msg)), lineNo(CurTok.lineNo), columnNo(CurTok.columnNo), erroneous_token(CurTok.lexeme) {}
+	compiler_error(string err_msg, int lineNo, int columnNo, string erroneous_token) : err_msg(move(err_msg)), lineNo(lineNo), columnNo(columnNo), erroneous_token(move(erroneous_token)) {}
 	virtual const char *what() const throw()
 	{
 		return err_msg.c_str();
 	}
 };
 
-static std::unique_ptr<ASTnode> parse_rval();
+static unique_ptr<ASTnode> parse_rval();
 
-static void assert_tok_any(std::vector<TOKEN_TYPE> tok_types, std::string err_msg)
+static void assert_tok_any(vector<TOKEN_TYPE> tok_types, string err_msg)
 {
 	for (auto tok_type: tok_types)
 	{
@@ -1557,22 +1571,22 @@ static void assert_tok_any(std::vector<TOKEN_TYPE> tok_types, std::string err_ms
 			return;
 		}
 	}
-	throw syntax_error(std::move(err_msg));
+	throw syntax_error(move(err_msg));
 }
 
 
-static void assert_tok(TOKEN_TYPE tok_type, std::string err_msg)
+static void assert_tok(TOKEN_TYPE tok_type, string err_msg)
 {
 	if (CurTok.type != tok_type)
 	{
-		throw syntax_error(std::move(err_msg));
+		throw syntax_error(move(err_msg));
 	}
 }
 
 
-static std::unique_ptr<ASTnode> LogError(std::string err_txt)
+static unique_ptr<ASTnode> LogError(string err_txt)
 {
-	std::cerr << "line " << CurTok.lineNo << " column "
+	cerr << "line " << CurTok.lineNo << " column "
 	          << CurTok.columnNo << " error: " << err_txt << '\n';
 	return nullptr;
 }
@@ -1586,7 +1600,7 @@ static auto parse_paren_expr()
 
 	assert_tok(RPAR, "Expected closing parenthesis ')' after rvalue");
 	getNextToken();      // Consume closing parenthesis ')'
-	return std::make_unique<ParenExprNode>(std::move(r));
+	return make_unique<ParenExprNode>(move(r));
 }
 
 
@@ -1594,11 +1608,11 @@ static auto parse_neg_term()
 {
 	assert_tok(MINUS, "Expected minus '-'");
 	getNextToken();      // Consume minus '-'
-	return std::make_unique<NegationNode>(parse_rval());
+	return make_unique<NegationNode>(parse_rval());
 }
 
 
-static std::unique_ptr<ASTnode> parse_expr()
+static unique_ptr<ASTnode> parse_expr()
 {
 	if (CurTok.type == IDENT)
 	{
@@ -1609,8 +1623,8 @@ static std::unique_ptr<ASTnode> parse_expr()
 		if (CurTok.type == ASSIGN)
 		{
 			getNextToken();                // Consume '='
-			auto lhs = std::make_unique<AssignmentLHS>(ident_name);
-			return std::make_unique<AssignmentExpr>(ActiveScopes.top(), std::move(lhs), parse_expr());
+			auto lhs = make_unique<AssignmentLHS>(ident_name);
+			return make_unique<AssignmentExpr>(ActiveScopes.top(), move(lhs), parse_expr());
 		}
 		else
 		{
@@ -1636,7 +1650,7 @@ static std::unique_ptr<ASTnode> parse_expr()
 
 static auto parse_args()
 {
-	auto args = std::vector<std::unique_ptr<ASTnode> >();
+	auto args = vector<unique_ptr<ASTnode> >();
 
 	while (CurTok.type != RPAR)
 	{
@@ -1654,7 +1668,7 @@ static auto parse_args()
 static auto parse_rval_FLOAT_LIT()
 {
 	assert_tok(FLOAT_LIT, "Expected float literal");
-	auto r = std::make_unique<FloatNode>(FloatVal);
+	auto r = make_unique<FloatNode>(FloatVal);
 
 	getNextToken();      // Consume FLOAT_LIT
 	return r;
@@ -1664,7 +1678,7 @@ static auto parse_rval_FLOAT_LIT()
 static auto parse_rval_INT_LIT()
 {
 	assert_tok(INT_LIT, "Expected int literal");
-	auto r = std::make_unique<IntNode>(IntVal);
+	auto r = make_unique<IntNode>(IntVal);
 
 	getNextToken();      // Consume INT_LIT
 	return r;
@@ -1674,14 +1688,14 @@ static auto parse_rval_INT_LIT()
 static auto parse_rval_BOOL_LIT()
 {
 	assert_tok(BOOL_LIT, "Expected bool literal");
-	auto r = std::make_unique<BoolNode>(BoolVal);
+	auto r = make_unique<BoolNode>(BoolVal);
 
 	getNextToken();      // Consume BOOL_LIT
 	return r;
 }
 
 
-static std::unique_ptr<RvalNode> parse_rval_var_or_fun()
+static unique_ptr<RvalNode> parse_rval_var_or_fun()
 {
 	assert_tok(IDENT, "Expected identifier");
 	auto ident_name = CurTok.lexeme;
@@ -1689,7 +1703,7 @@ static std::unique_ptr<RvalNode> parse_rval_var_or_fun()
 	getNextToken();          // Consume IDENT
 	if (CurTok.type == LPAR) // Parse Function call
 	{
-		auto fun_call = std::make_unique<FunCallNode>(ident_name);
+		auto fun_call = make_unique<FunCallNode>(ident_name);
 		assert_tok(LPAR, "This should not happen :(");
 		getNextToken();           // Consume opening paren "("
 		fun_call->setSubs(parse_args());
@@ -1703,7 +1717,7 @@ static std::unique_ptr<RvalNode> parse_rval_var_or_fun()
 		auto var_decl = ActiveScopes.top()->getDecl(ident_name);
 		if (var_decl)
 		{
-			return std::make_unique<VarExprNode>(ActiveScopes.top(), ident_name, var_decl);
+			return make_unique<VarExprNode>(ActiveScopes.top(), ident_name, var_decl);
 		}
 		else // variable is not declared
 		{
@@ -1717,11 +1731,11 @@ static auto parse_not_term()
 {
 	assert_tok(NOT, "Expected '!'");
 	getNextToken();      // Consume "!"
-	return std::make_unique<NotNode>(parse_rval());
+	return make_unique<NotNode>(parse_rval());
 }
 
 
-static std::unique_ptr<ASTnode> parse_rval_term()
+static unique_ptr<ASTnode> parse_rval_term()
 {
 	switch (CurTok.type)
 	{
@@ -1757,17 +1771,17 @@ static auto parse_rval_multiplication()
 	while (loop)
 	{
 		char l_type, r_type;
-		std::unique_ptr<ASTnode> rhs;
+		unique_ptr<ASTnode> rhs;
 		switch (CurTok.type)
 		{
 		case ASTERISK:
 			getNextToken();                        // consume "*"
-			to_be_returned = std::make_unique<OpMULT>(std::move(to_be_returned), parse_rval_term());
+			to_be_returned = make_unique<OpMULT>(move(to_be_returned), parse_rval_term());
 			break;
 
 		case DIV:
 			getNextToken();                        // consume "/"
-			to_be_returned = std::make_unique<OpDIV>(std::move(to_be_returned), parse_rval_term());
+			to_be_returned = make_unique<OpDIV>(move(to_be_returned), parse_rval_term());
 			break;
 
 		case MOD:
@@ -1779,7 +1793,7 @@ static auto parse_rval_multiplication()
 			{
 				throw semantic_error("Invalid operands of '%' (have '" + type_to_str(l_type) + "' and '" + type_to_str(l_type) + "')");
 			}
-			to_be_returned = std::make_unique<OpMODULO>(std::move(to_be_returned), parse_rval_term());
+			to_be_returned = make_unique<OpMODULO>(move(to_be_returned), parse_rval_term());
 			break;
 
 		default:
@@ -1790,7 +1804,7 @@ static auto parse_rval_multiplication()
 }
 
 
-static std::string type_to_str(const char type)
+static string type_to_str(const char type)
 {
 	switch (type)
 	{
@@ -1822,12 +1836,12 @@ static auto parse_rval_addition()
 		{
 		case PLUS:
 			getNextToken();                        // consume "+"
-			to_be_returned = std::make_unique<OpADD>(std::move(to_be_returned), parse_rval_multiplication());
+			to_be_returned = make_unique<OpADD>(move(to_be_returned), parse_rval_multiplication());
 			break;
 
 		case MINUS:
 			getNextToken();                        // consume "-"
-			to_be_returned = std::make_unique<OpSUB>(std::move(to_be_returned), parse_rval_multiplication());
+			to_be_returned = make_unique<OpSUB>(move(to_be_returned), parse_rval_multiplication());
 			break;
 
 		default:
@@ -1849,29 +1863,29 @@ static auto parse_rval_inequality()
 		{
 		case LT:
 			getNextToken();                        // consume "<"
-			to_be_returned = std::make_unique<OpLT>(std::move(to_be_returned), parse_rval_addition());
+			to_be_returned = make_unique<OpLT>(move(to_be_returned), parse_rval_addition());
 			break;
 
 		case LE:
 			getNextToken();                        // consume "<="
-			to_be_returned = std::make_unique<OpLE>(std::move(to_be_returned), parse_rval_addition());
+			to_be_returned = make_unique<OpLE>(move(to_be_returned), parse_rval_addition());
 			break;
 
 		case GE:
 			getNextToken();                        // consume ">="
-			to_be_returned = std::make_unique<OpGE>(std::move(to_be_returned), parse_rval_addition());
+			to_be_returned = make_unique<OpGE>(move(to_be_returned), parse_rval_addition());
 			break;
 
 		case GT:
 			getNextToken();                        // consume ">"
-			to_be_returned = std::make_unique<OpGT>(std::move(to_be_returned), parse_rval_addition());
+			to_be_returned = make_unique<OpGT>(move(to_be_returned), parse_rval_addition());
 			break;
 
 		default:
 			loop = false;
 		}
 	}
-	// std::cout << "No more rval ineqality " << CurTok.type << '\n';
+	// cout << "No more rval ineqality " << CurTok.type << '\n';
 	return to_be_returned;
 }
 
@@ -1887,31 +1901,31 @@ static auto parse_rval_equality()
 		{
 		case EQ:
 			getNextToken();                        // consume "=="
-			to_be_returned = std::make_unique<OpEQ>(std::move(to_be_returned), parse_rval_inequality());
+			to_be_returned = make_unique<OpEQ>(move(to_be_returned), parse_rval_inequality());
 			break;
 
 		case NE:
 			getNextToken();                        // consume "!="
-			to_be_returned = std::make_unique<OpNE>(std::move(to_be_returned), parse_rval_inequality());
+			to_be_returned = make_unique<OpNE>(move(to_be_returned), parse_rval_inequality());
 			break;
 
 		default:
 			loop = false;
 		}
 	}
-	// std::cout << "No more rval equality " << CurTok.type << '\n';
+	// cout << "No more rval equality " << CurTok.type << '\n';
 	return to_be_returned;
 }
 
 
-static std::unique_ptr<ASTnode> parse_rval_conjunction()
+static unique_ptr<ASTnode> parse_rval_conjunction()
 {
 	auto equality = parse_rval_equality();
 
 	if (CurTok.type == AND)
 	{
-		auto to_be_returned = std::make_unique<ConjunctionNode>();
-		to_be_returned->addSub(std::move(equality));
+		auto to_be_returned = make_unique<ConjunctionNode>();
+		to_be_returned->addSub(move(equality));
 		while (CurTok.type == AND)
 		{
 			getNextToken();                // consume "&&"
@@ -1920,18 +1934,18 @@ static std::unique_ptr<ASTnode> parse_rval_conjunction()
 		return to_be_returned;
 	}
 	return equality;
-	// std::cout << "No more rval conjunctions " << CurTok.type << '\n';
+	// cout << "No more rval conjunctions " << CurTok.type << '\n';
 }
 
 
-static std::unique_ptr<ASTnode> parse_rval()
+static unique_ptr<ASTnode> parse_rval()
 {
 	auto con = parse_rval_conjunction();
 
 	if (CurTok.type == OR)
 	{
-		auto to_be_returned = std::make_unique<DisjunctionNode>();
-		to_be_returned->addSub(std::move(con));
+		auto to_be_returned = make_unique<DisjunctionNode>();
+		to_be_returned->addSub(move(con));
 		while (CurTok.type == OR)
 		{
 			getNextToken();                // consume "||"
@@ -1940,12 +1954,12 @@ static std::unique_ptr<ASTnode> parse_rval()
 		return to_be_returned;
 	}
 
-	// std::cout << "No more rval disunctions " << CurTok.type << '\n';
+	// cout << "No more rval disunctions " << CurTok.type << '\n';
 	return con;
 }
 
 
-static std::unique_ptr<ParamNode> parse_param()
+static unique_ptr<ParamNode> parse_param()
 {
 	int param_type = 0;
 
@@ -1968,16 +1982,16 @@ static std::unique_ptr<ParamNode> parse_param()
 	}
 	getNextToken();      // Consume type token
 	assert_tok(IDENT, "Identifier must follow type in parameter list");
-	auto r = std::make_unique<ParamNode>(CurTok.lexeme, param_type);
+	auto r = make_unique<ParamNode>(CurTok.lexeme, param_type);
 
 	getNextToken();      // Consume IDENT
 	return r;
 }
 
 
-static std::unique_ptr<ASTnode> parse_params()
+static unique_ptr<ASTnode> parse_params()
 {
-	auto params = std::make_unique<ParamsNode>();
+	auto params = make_unique<ParamsNode>();
 
 	if (CurTok.type == VOID_TOK)
 	{
@@ -2000,7 +2014,7 @@ static std::unique_ptr<ASTnode> parse_params()
 }
 
 
-static std::unique_ptr<ASTnode> parse_extern()
+static unique_ptr<ASTnode> parse_extern()
 {
 	assert_tok(EXTERN, "Expected 'extern' keyword");
 	getNextToken();      // Consume "extern"
@@ -2045,7 +2059,7 @@ static std::unique_ptr<ASTnode> parse_extern()
 	getNextToken();      // Consume ")"
 	assert_tok(SC, "Expected semicolon after extern function signature");
 	getNextToken();      // Consume ";"
-	auto tbr = std::make_unique<FunctionSignature>(fun_name, return_type, std::move(fun_params));
+	auto tbr = make_unique<FunctionSignature>(fun_name, return_type, move(fun_params));
 
 	return tbr;
 }
@@ -2053,7 +2067,7 @@ static std::unique_ptr<ASTnode> parse_extern()
 
 static auto parse_extern_list()
 {
-	auto extern_list = std::make_unique<ExternListNode>();
+	auto extern_list = make_unique<ExternListNode>();
 
 	while (CurTok.type == EXTERN)
 	{
@@ -2063,9 +2077,9 @@ static auto parse_extern_list()
 }
 
 
-static std::unique_ptr<ASTnode> parse_local_decls()
+static unique_ptr<ASTnode> parse_local_decls()
 {
-	auto local_decls = std::make_unique<LocalDeclsNode>();
+	auto local_decls = make_unique<LocalDeclsNode>();
 	bool loop        = true;
 
 	while (loop)
@@ -2094,9 +2108,9 @@ static std::unique_ptr<ASTnode> parse_local_decls()
 			assert_tok(IDENT, "Expected identifier after type in local declaration");
 
 			auto var_name = CurTok.lexeme;
-			auto decl     = std::make_unique<VarDeclNode>(ActiveScopes.top(), var_name, var_type, false);
+			auto decl     = make_unique<VarDeclNode>(ActiveScopes.top(), var_name, var_type, false);
 			ActiveScopes.top()->setDecl(var_name, decl.get());
-			local_decls->addSub(std::move(decl));
+			local_decls->addSub(move(decl));
 
 			getNextToken();                // Consume IDENT
 			assert_tok(SC, "Expected semicolon ';' at the end of local declaration");
@@ -2107,13 +2121,13 @@ static std::unique_ptr<ASTnode> parse_local_decls()
 }
 
 
-static std::unique_ptr<ASTnode> parse_expr_stmt()
+static unique_ptr<ASTnode> parse_expr_stmt()
 {
 	// todo check current token
 	if (CurTok.type == SC)
 	{
 		getNextToken();           // Consume ';'
-		return std::make_unique<NullStmt>();
+		return make_unique<NullStmt>();
 	}
 
 	auto expr_stmt = parse_expr();
@@ -2124,9 +2138,9 @@ static std::unique_ptr<ASTnode> parse_expr_stmt()
 }
 
 
-static std::unique_ptr<ASTnode> parse_block()
+static unique_ptr<ASTnode> parse_block()
 {
-	auto new_block = std::make_unique<BlockNode>();
+	auto new_block = make_unique<BlockNode>();
 
 	ActiveScopes.push(new_block->scope);
 
@@ -2137,14 +2151,14 @@ static std::unique_ptr<ASTnode> parse_block()
 
 	assert_tok(RBRA, "Expected closing right brace '}' at the start of block");
 	getNextToken();      // Consume "}"
-	new_block->addSub(std::move(stmts));
-	new_block->addSub(std::move(decls));
+	new_block->addSub(move(stmts));
+	new_block->addSub(move(decls));
 	ActiveScopes.pop();
 	return new_block;
 }
 
 
-static std::unique_ptr<ASTnode> parse_if_stmt()
+static unique_ptr<ASTnode> parse_if_stmt()
 {
 	assert_tok(IF, "Expected if at start of if-statement. This should not happen :(");
 	getNextToken();      // Consume "if"
@@ -2160,16 +2174,16 @@ static std::unique_ptr<ASTnode> parse_if_stmt()
 	{
 		getNextToken();           // Consume "else"
 		auto else_body = parse_block();
-		return std::make_unique<IfWithElseNode>(std::move(if_cond), std::move(if_body), std::move(else_body));
+		return make_unique<IfWithElseNode>(move(if_cond), move(if_body), move(else_body));
 	}
 	else
 	{
-		return std::make_unique<IfStmt>(std::move(if_cond), std::move(if_body));
+		return make_unique<IfStmt>(move(if_cond), move(if_body));
 	}
 }
 
 
-static std::unique_ptr<ASTnode> parse_while_stmt()
+static unique_ptr<ASTnode> parse_while_stmt()
 {
 	assert_tok(WHILE, "Expected while keyword at the start of while loop. This should not happen :(");
 	getNextToken();      // Consume "while"
@@ -2181,22 +2195,22 @@ static std::unique_ptr<ASTnode> parse_while_stmt()
 	getNextToken();      // Consume ')'
 	auto loop_body = parse_stmt();
 
-	return std::make_unique<WhileStmt>(std::move(condition), std::move(loop_body));
+	return make_unique<WhileStmt>(move(condition), move(loop_body));
 }
 
 
-static std::unique_ptr<ASTnode> parse_return_stmt()
+static unique_ptr<ASTnode> parse_return_stmt()
 {
 	assert_tok(RETURN, "Expected return keyword at the start of return statement. This should not happen :{");
 	getNextToken();        // Consume "return"
 	if (CurTok.type == SC) // Return nothing
 	{
 		getNextToken();    // Consume ';'
-		return std::make_unique<ReturnNothingNode>();
+		return make_unique<ReturnNothingNode>();
 	}
 	else      // Return expr
 	{
-		auto stmt = std::make_unique<ReturnValueNode>(parse_expr());
+		auto stmt = make_unique<ReturnValueNode>(parse_expr());
 		assert_tok(SC, "Expected semicolon ';' after return statement");
 		getNextToken();           // Consume ';'
 		return stmt;
@@ -2204,7 +2218,7 @@ static std::unique_ptr<ASTnode> parse_return_stmt()
 }
 
 
-static std::unique_ptr<ASTnode> parse_stmt()
+static unique_ptr<ASTnode> parse_stmt()
 {
 	switch (CurTok.type)
 	{
@@ -2226,9 +2240,9 @@ static std::unique_ptr<ASTnode> parse_stmt()
 }
 
 
-static std::unique_ptr<ASTnode> parse_stmt_list()
+static unique_ptr<ASTnode> parse_stmt_list()
 {
-	auto stmt_list = std::make_unique<StmtListNode>();
+	auto stmt_list = make_unique<StmtListNode>();
 
 	while (CurTok.type != RBRA)
 	{
@@ -2239,7 +2253,7 @@ static std::unique_ptr<ASTnode> parse_stmt_list()
 
 
 // Parses global variable declarations and function definitions
-static std::unique_ptr<ASTnode> parse_decl()
+static unique_ptr<ASTnode> parse_decl()
 {
 	assert_tok_any({ INT_TOK, FLOAT_TOK, BOOL_TOK, VOID_TOK }, "Expected type keyword at the start of declaration");
 	if (CurTok.type == VOID_TOK)
@@ -2267,9 +2281,9 @@ static std::unique_ptr<ASTnode> parse_decl()
 		auto fun_params = parse_params();
 		assert_tok(RPAR, "Expected closing right parenthesis ')' after parameter list");
 		getNextToken();           // Consume ')'
-		auto fun_sig  = std::make_unique<FunctionSignature>(fun_name, fun_type, std::move(fun_params));
+		auto fun_sig  = make_unique<FunctionSignature>(fun_name, fun_type, move(fun_params));
 		auto fun_body = parse_block();
-		auto fun_def  = std::make_unique<FunDeclNode>(std::move(fun_sig), std::move(fun_body));
+		auto fun_def  = make_unique<FunDeclNode>(move(fun_sig), move(fun_body));
 		DefinedFunctions[fun_name] = fun_def.get();
 		return fun_def;
 	}
@@ -2313,9 +2327,9 @@ static std::unique_ptr<ASTnode> parse_decl()
 	{
 		// Parse variable decl
 		getNextToken();           // Consume ';'
-		auto var_decl = std::make_unique<VarDeclNode>(ActiveScopes.top(), decl_name, decl_type, true);
+		auto var_decl = make_unique<VarDeclNode>(ActiveScopes.top(), decl_name, decl_type, true);
 		ActiveScopes.top()->setDecl(decl_name, var_decl.get());
-		return std::move(var_decl);
+		return move(var_decl);
 	}
 	else if (CurTok.type == LPAR)
 	{
@@ -2325,9 +2339,9 @@ static std::unique_ptr<ASTnode> parse_decl()
 		assert_tok(RPAR, "Expected closing right parenthesis ')' after parameter list");
 		getNextToken();            // Consume ')'
 
-		auto sig     = std::make_unique<FunctionSignature>(decl_name, decl_type, std::move(params));
+		auto sig     = make_unique<FunctionSignature>(decl_name, decl_type, move(params));
 		auto body    = parse_block();
-		auto fun_def = std::make_unique<FunDeclNode>(std::move(sig), std::move(body));
+		auto fun_def = make_unique<FunDeclNode>(move(sig), move(body));
 		DefinedFunctions[decl_name] = fun_def.get();
 		return fun_def;
 	}
@@ -2340,7 +2354,7 @@ static std::unique_ptr<ASTnode> parse_decl()
 
 static auto parse_decl_list()
 {
-	auto decl_list = std::make_unique<DeclListNode>();
+	auto decl_list = make_unique<DeclListNode>();
 
 	while (CurTok.type != EOF_TOK)
 	{
@@ -2353,13 +2367,13 @@ static auto parse_decl_list()
 
 
 // program ::= extern_list decl_list | decl_list
-static std::unique_ptr<ProgramNode> parse_program()
+static unique_ptr<ProgramNode> parse_program()
 {
-	return std::make_unique<ProgramNode>(parse_extern_list(), parse_decl_list());
+	return make_unique<ProgramNode>(parse_extern_list(), parse_decl_list());
 }
 
 
-static std::unique_ptr<ProgramNode> parser()
+static unique_ptr<ProgramNode> parser()
 {
 	return parse_program();
 }
@@ -2378,13 +2392,13 @@ inline llvm::raw_ostream& operator<<(llvm::raw_ostream& os, const ASTnode& ast)
 
 static void print_ast(ASTnode *root, int level = 0)
 {
-	std::string pre = "";
+	string pre = "";
 
 	for (int i = 0; i < level; ++i)
 	{
 		pre += '\t';
 	}
-	std::cout << pre << root->to_string() << '\n';
+	cout << pre << root->to_string() << '\n';
 	if (root->children.size())
 	{
 		for (int i = 0; i < root->children.size(); ++i)
@@ -2584,16 +2598,16 @@ static Value *convert_value_to_bool(Value *val)
 }
 
 
-FunctionSignature::FunctionSignature(std::string name, const char return_type, std::unique_ptr<ASTnode> params)
+FunctionSignature::FunctionSignature(string name, const char return_type, unique_ptr<ASTnode> params)
 	: name(name), return_type(return_type)
 {
-	children.push_back(std::move(params));
+	children.push_back(move(params));
 }
 
 
 Function *FunctionSignature::codegen()
 {
-	std::vector<Type *> param_types;
+	vector<Type *> param_types;
 	auto                fun_params = params();
 
 	for (int i = 0; i < fun_params->param_count(); ++i)
@@ -2733,7 +2747,7 @@ Value *AssignmentExpr::codegen()
 
 	if (!scope->hasName(var_to_name))
 	{
-		throw semantic_error(std::string() + "Variable '" + var_to_name + "' is being assigned but never declared.");
+		throw semantic_error(string() + "Variable '" + var_to_name + "' is being assigned but never declared.");
 	}
 
 
@@ -2997,7 +3011,7 @@ Value *NotNode::codegen()
 /// the function.  This is used for mutable variables etc.
 // Copied from Kaleidoscope tutorial
 // https://releases.llvm.org/10.0.0/docs/tutorial/MyFirstLanguageFrontend/LangImpl07.html
-static AllocaInst *CreateEntryBlockAlloca(Type *VarType, const std::string& VarName)
+static AllocaInst *CreateEntryBlockAlloca(Type *VarType, const string& VarName)
 {
 	auto        TheFunction = Builder.GetInsertBlock()->getParent();
 	IRBuilder<> TmpB(&TheFunction->getEntryBlock(), TheFunction->getEntryBlock().begin());
@@ -3037,7 +3051,7 @@ Value *ConjunctionNode::codegen()
 	{
 		current_parent->getBasicBlockList().push_back(current_block);                                   // add previous block
 		current_block = next_block;
-		next_block    = BasicBlock::Create(TheContext, std::string("conj_cl") + std::to_string(i + 1)); // last claus in disjunction
+		next_block    = BasicBlock::Create(TheContext, string("conj_cl") + std::to_string(i + 1)); // last claus in disjunction
 		Builder.CreateCondBr(convert_value_to_bool(children[i]->codegen()), next_block, end_block);
 	}
 
@@ -3090,7 +3104,7 @@ Value *DisjunctionNode::codegen()
 	{
 		current_parent->getBasicBlockList().push_back(current_block);                                   // add previous block
 		current_block = next_block;
-		next_block    = BasicBlock::Create(TheContext, std::string("disj_cl") + std::to_string(i + 1)); // last claus in disjunction
+		next_block    = BasicBlock::Create(TheContext, string("disj_cl") + std::to_string(i + 1)); // last claus in disjunction
 		Builder.CreateCondBr(convert_value_to_bool(children[i]->codegen()), end_block, next_block);
 	}
 
@@ -3204,11 +3218,11 @@ Value *OpMULT::codegen()
 }
 
 
-AssignmentExpr::AssignmentExpr(VariableScope *scope, std::unique_ptr<ASTnode> lhs, std::unique_ptr<ASTnode> rhs)
+AssignmentExpr::AssignmentExpr(VariableScope *scope, unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
 	: scope(scope)
 {
-	children.push_back(std::move(lhs));
-	children.push_back(std::move(rhs));
+	children.push_back(move(lhs));
+	children.push_back(move(rhs));
 	if (this->rhs()->expr_type() == VOID_TYPE)
 	{
 		throw semantic_error(" void value not ignored as it ought to be"); // Same error as gcc
@@ -3362,7 +3376,7 @@ Value *OpLE::codegen()
 }
 
 
-Value *VariableScope::getAddr(std::string var_name)
+Value *VariableScope::getAddr(string var_name)
 {
 	if (hasLocalName(var_name))
 	{
@@ -3419,7 +3433,7 @@ Value *OpGT::codegen()
 }
 
 
-void VariableScope::setAddr(std::string var_name, Value *addr)
+void VariableScope::setAddr(string var_name, Value *addr)
 {
 	if (hasLocalName(var_name))
 	{
@@ -3484,7 +3498,7 @@ Value *VarDeclNode::codegen()
 	{
 		if (TheModule->getGlobalVariable(var_name))
 		{
-			throw semantic_error(std::string() + "Tried to declare global variable " + var_name + " twice");
+			throw semantic_error(string() + "Tried to declare global variable " + var_name + " twice");
 		}
 		Constant *V;
 		Type     *T;
@@ -3506,7 +3520,7 @@ Value *VarDeclNode::codegen()
 			break;
 
 		default:
-			throw compiler_error(std::string() + "Unknown variable type " + var_type);
+			throw compiler_error(string() + "Unknown variable type " + var_type);
 		}
 		auto Address = new GlobalVariable(*TheModule, T, false, GlobalValue::ExternalLinkage, V, var_name);
 		scope->setAddr(var_name, Address);
@@ -3627,11 +3641,11 @@ Type *ParamNode::llvm_type()
 }
 
 
-void VariableScope::setDecl(std::string var_name, VarDeclNode *decl)
+void VariableScope::setDecl(string var_name, VarDeclNode *decl)
 {
 	if (hasLocalName(var_name))
 	{
-		throw semantic_error(std::string() + "attempted to define " + var_name + " but has been already defined in this scope");
+		throw semantic_error(string() + "attempted to define " + var_name + " but has been already defined in this scope");
 	}
 	local_decls[var_name] = decl;
 }
@@ -3666,7 +3680,7 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		std::cout << "Usage: ./code InputFile\n";
+		cout << "Usage: ./code InputFile\n";
 		return 1;
 	}
 
@@ -3681,33 +3695,33 @@ int main(int argc, char **argv)
 	//                CurTok.type);
 	//    getNextToken();
 	// }
-	std::cerr << "Lexer Finished\n";
+	cerr << "Lexer Finished\n";
 
 	// Make the module, which holds all the code.
-	TheModule = std::make_unique<Module>("mini-c", TheContext);
+	TheModule = make_unique<Module>("mini-c", TheContext);
 
 	// Run the parser now.
 	try
 	{
 		auto program = parser();
-		std::cerr << "Parsing Finished\n";
+		cerr << "Parsing Finished\n";
 		print_ast(program.get());
 		program->codegen();
 	}
 	catch (syntax_error& e)
 	{
-		std::cerr << "Parsing ERROR on line " << e.lineNo << " column " << columnNo << " received token " << e.erroneous_token << std::endl;
-		std::cerr << e.what() << '\n';
+		cerr << "Parsing ERROR on line " << e.lineNo << " column " << columnNo << " received token " << e.erroneous_token << endl;
+		cerr << e.what() << '\n';
 	}
 	catch (semantic_error& e)
 	{
-		std::cerr << "Semantic ERROR on line " << e.lineNo << " column " << columnNo << " received token " << e.erroneous_token << std::endl;
-		std::cerr << e.what() << '\n';
+		cerr << "Semantic ERROR on line " << e.lineNo << " column " << columnNo << " received token " << e.erroneous_token << endl;
+		cerr << e.what() << '\n';
 	}
 	catch (compiler_error& e)
 	{
-		std::cerr << "Compiler ERROR on line " << e.lineNo << " column " << columnNo << " received token " << e.erroneous_token << std::endl;
-		std::cerr << e.what() << '\n';
+		cerr << "Compiler ERROR on line " << e.lineNo << " column " << columnNo << " received token " << e.erroneous_token << endl;
+		cerr << e.what() << '\n';
 	}
 
 	//********************* Start printing final IR **************************
