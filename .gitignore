@@ -1,6 +1,9 @@
+# Compiler folder
 /build/
 
+# Output files
 *.exe
 *.ll
 
+# Visual Studio Code project file
 .vscode/
