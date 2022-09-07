@@ -1362,7 +1362,8 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		cout << "Usage: ./code InputFile\n";
+		string compilerPath = argv[0];
+		cout << "Usage: " << compilerPath <<  " InputFile\n";
 		return 1;
 	}
 
