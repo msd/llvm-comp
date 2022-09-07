@@ -489,7 +489,8 @@ static void putBackToken(TOKEN tok)
 
 LLVMContext TheContext;
 IRBuilder<> Builder(TheContext);
-unique_ptr<Module> TheModule;
+// Make the module, which holds all the code.
+unique_ptr<Module> TheModule = make_unique<Module>("mini-c", TheContext);
 map<string, FunctionSignature *> ExternedFunctions;
 map<string, FunDeclNode *> DefinedFunctions;
 stack<VariableScope *> ActiveScopes;
@@ -1105,7 +1106,6 @@ static unique_ptr<ASTnode> parse_if_stmt()
 	}
 }
 
-
 static unique_ptr<ASTnode> parse_while_stmt()
 {
 	assert_tok(WHILE, "Expected while keyword at the start of while loop. This should not happen :(");
@@ -1378,9 +1378,6 @@ int main(int argc, char **argv)
 	//    getNextToken();
 	// }
 	cerr << "Lexer Finished\n";
-
-	// Make the module, which holds all the code.
-	TheModule = make_unique<Module>("mini-c", TheContext);
 
 	// Run the parser now.
 	try
