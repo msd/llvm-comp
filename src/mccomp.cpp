@@ -15,7 +15,7 @@
 #include "llvm/IR/Verifier.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Host.h"
-#include "llvm/Support/TargetRegistry.h"
+#include "llvm/MC/TargetRegistry.h"
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetMachine.h"
@@ -3744,7 +3744,7 @@ int main(int argc, char **argv)
 	// Print out all of the generated code into a file called output.ll
 	auto            Filename = "output.ll";
 	std::error_code EC;
-	raw_fd_ostream  dest(Filename, EC, sys::fs::F_None);
+	raw_fd_ostream  dest(Filename, EC, sys::fs::OF_None);
 
 	if (EC)
 	{
