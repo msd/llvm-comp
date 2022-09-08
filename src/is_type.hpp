@@ -3,21 +3,14 @@
 #include "llvm/IR/Value.h"
 #include "llvm/IR/Type.h"
 
+#include "ExprNode.hpp"
+
 using namespace llvm;
 
-static bool is_int(Value *v)
-{
-	return v->getType()->isIntegerTy(32);
-}
+bool is_int(Value *v);
 
+bool is_bool(Value *v);
 
-static bool is_bool(Value *v)
-{
-	return v->getType()->isIntegerTy(1);
-}
+bool is_float(Value *v);
 
-
-static bool is_float(Value *v)
-{
-	return v->getType()->isFloatTy();
-}
+Value *create_expr_true_check(ExprNode *expr);

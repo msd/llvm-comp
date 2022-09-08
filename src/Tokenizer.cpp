@@ -5,6 +5,15 @@
 #include "the_externs.hpp"
 #include "my_errors.hpp"
 
+string IdentifierStr; // Filled in if IDENT
+int IntVal; // Filled in if INT_LIT
+bool BoolVal; // Filled in if BOOL_LIT
+float FloatVal; // Filled in if FLOAT_LIT
+string StringVal; // Filled in if String Literal
+int lineNo, columnNo;
+
+deque<TOKEN> tok_buffer;
+
 int nextChar()
 {
     return getc(pFile);
@@ -352,4 +361,15 @@ void assert_tok(TOKEN_TYPE tok_type, string err_msg)
 void putBackToken(TOKEN tok)
 {
 	tok_buffer.push_front(tok);
+}
+
+TOKEN returnTok(string lexVal, int tok_type)
+{
+	TOKEN return_tok;
+
+	return_tok.lexeme   = lexVal;
+	return_tok.type     = tok_type;
+	return_tok.lineNo   = lineNo;
+	return_tok.columnNo = columnNo - lexVal.length() - 1;
+	return return_tok;
 }

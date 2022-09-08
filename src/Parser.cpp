@@ -45,7 +45,7 @@ unique_ptr<NegationNode> parse_neg_term()
 }
 
 
-unique_ptr<ASTnode> parse_expr()
+unique_ptr<ExprNode> parse_expr()
 {
 	if (CurTok.type == IDENT)
 	{
@@ -112,6 +112,7 @@ unique_ptr<IntNode> parse_rval_INT_LIT()
 {
 	assert_tok(INT_LIT, "Expected int literal");
 	auto r = make_unique<IntNode>(IntVal);
+	cout << "!!==!! INT LIT " << IntVal;
 
 	getNextToken();      // Consume INT_LIT
 	return r;
@@ -168,7 +169,7 @@ unique_ptr<NotNode> parse_not_term()
 }
 
 
-unique_ptr<ASTnode> parse_rval_term()
+unique_ptr<ExprNode> parse_rval_term()
 {
 	switch (CurTok.type)
 	{
@@ -196,9 +197,9 @@ unique_ptr<ASTnode> parse_rval_term()
 }
 
 
-unique_ptr<ASTnode> parse_rval_multiplication()
+unique_ptr<ExprNode> parse_rval_multiplication()
 {
-	unique_ptr<ASTnode> to_be_returned = parse_rval_term();
+	unique_ptr<ExprNode> to_be_returned = parse_rval_term();
 	bool loop           = true;
 
 	while (loop)
@@ -238,7 +239,7 @@ unique_ptr<ASTnode> parse_rval_multiplication()
 
 
 // todo refactor to make more sense (parses also subtraction)
-unique_ptr<ASTnode> parse_rval_addition()
+unique_ptr<ExprNode> parse_rval_addition()
 {
 	auto to_be_returned = parse_rval_multiplication();
 	bool loop           = true;
@@ -265,7 +266,7 @@ unique_ptr<ASTnode> parse_rval_addition()
 }
 
 
-unique_ptr<ASTnode> parse_rval_inequality()
+unique_ptr<ExprNode> parse_rval_inequality()
 {
 	auto to_be_returned = parse_rval_addition();
 	bool loop           = true;
@@ -303,7 +304,7 @@ unique_ptr<ASTnode> parse_rval_inequality()
 }
 
 
-unique_ptr<ASTnode> parse_rval_equality()
+unique_ptr<ExprNode> parse_rval_equality()
 {
 	auto to_be_returned = parse_rval_inequality();
 	bool loop           = true;
@@ -331,7 +332,7 @@ unique_ptr<ASTnode> parse_rval_equality()
 }
 
 
-unique_ptr<ASTnode> parse_rval_conjunction()
+unique_ptr<ExprNode> parse_rval_conjunction()
 {
 	auto equality = parse_rval_equality();
 
@@ -351,7 +352,7 @@ unique_ptr<ASTnode> parse_rval_conjunction()
 }
 
 
-unique_ptr<ASTnode> parse_rval()
+unique_ptr<ExprNode> parse_rval()
 {
 	auto con = parse_rval_conjunction();
 

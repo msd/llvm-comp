@@ -16,21 +16,21 @@
 
 unique_ptr<ParenExprNode> parse_paren_expr();
 unique_ptr<NegationNode> parse_neg_term();
-unique_ptr<ASTnode> parse_expr();
+unique_ptr<ExprNode> parse_expr();
 vector<unique_ptr<ASTnode>> parse_args();
 unique_ptr<FloatNode> parse_rval_FLOAT_LIT();
 unique_ptr<IntNode> parse_rval_INT_LIT();
 unique_ptr<BoolNode> parse_rval_BOOL_LIT();
 unique_ptr<RvalNode> parse_rval_var_or_fun();
 unique_ptr<NotNode> parse_not_term();
-unique_ptr<ASTnode> parse_rval_term();
-unique_ptr<ASTnode> parse_rval_multiplication();
+unique_ptr<ExprNode> parse_rval_term();
+unique_ptr<ExprNode> parse_rval_multiplication();
 // todo refactor to make more sense (parses also subtraction)
-unique_ptr<ASTnode> parse_rval_addition();
-unique_ptr<ASTnode> parse_rval_inequality();
-unique_ptr<ASTnode> parse_rval_equality();
-unique_ptr<ASTnode> parse_rval_conjunction();
-unique_ptr<ASTnode> parse_rval();
+unique_ptr<ExprNode> parse_rval_addition();
+unique_ptr<ExprNode> parse_rval_inequality();
+unique_ptr<ExprNode> parse_rval_equality();
+unique_ptr<ExprNode> parse_rval_conjunction();
+unique_ptr<ExprNode> parse_rval();
 unique_ptr<ParamNode> parse_param();
 unique_ptr<ASTnode> parse_params();
 unique_ptr<ASTnode> parse_extern();
