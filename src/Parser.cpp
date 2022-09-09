@@ -112,7 +112,6 @@ unique_ptr<IntNode> parse_rval_INT_LIT()
 {
 	assert_tok(INT_LIT, "Expected int literal");
 	auto r = make_unique<IntNode>(IntVal);
-	cout << "!!==!! INT LIT " << IntVal;
 
 	getNextToken();      // Consume INT_LIT
 	return r;
