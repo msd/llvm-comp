@@ -4,19 +4,20 @@
 
 Value *LocalDeclsNode::codegen()
 {
-	if (children.size())
-	{
-		Value *v;
+    if (children.size())
+    {
+        Value *v;
 
-		for (int i = 0; i < children.size(); ++i)
-		{
-			v = children[i]->codegen();
-			if (!v)
-			{
-				throw compiler_error("failed to allocate create local variable");
-			}
-		}
-		return v;
-	}
-	return Builder.getTrue();
+        for (int i = 0; i < children.size(); ++i)
+        {
+            v = children[i]->codegen();
+            if (!v)
+            {
+                throw compiler_error(
+                    "failed to allocate create local variable");
+            }
+        }
+        return v;
+    }
+    return Builder.getTrue();
 }

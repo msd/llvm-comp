@@ -4,11 +4,11 @@
 
 class LocalDeclsNode : public ASTnode
 {
-public:
-	virtual const string node_type() const
-	{
-		return "LOCAL DECLS";
-	}
+  public:
+    virtual const string node_type() const
+    {
+        return "LOCAL DECLS";
+    }
 
-	virtual Value *codegen();
+    virtual Value *codegen();
 };

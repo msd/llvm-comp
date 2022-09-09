@@ -4,5 +4,5 @@ extern IRBuilder<> Builder;
 
 Value *AssignmentLHS::codegen()
 {
-	return Builder.getTrue(); // nothing to do
+    return Builder.getTrue(); // nothing to do
 }

@@ -4,11 +4,11 @@
 
 class StmtListNode : public ASTnode
 {
-public:
-	virtual const string node_type() const
-	{
-		return "STMTS";
-	}
+  public:
+    virtual const string node_type() const
+    {
+        return "STMTS";
+    }
 
-	virtual Value *codegen();
+    virtual Value *codegen();
 };

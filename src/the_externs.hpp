@@ -1,20 +1,20 @@
 #pragma once
 
-#include <stack>
-#include <memory>
 #include <map>
+#include <memory>
+#include <stack>
 
 #include "llvm/IR/IRBuilder.h"
 
-#include "Token.hpp"
 #include "FunctionSignature.hpp"
+#include "Token.hpp"
 
 class VariableScope;
 class FunDeclNode;
 
 using std::map;
-using std::unique_ptr;
 using std::stack;
+using std::unique_ptr;
 using namespace llvm;
 
 extern LLVMContext TheContext;

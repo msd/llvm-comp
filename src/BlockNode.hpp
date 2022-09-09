@@ -5,26 +5,27 @@
 
 class BlockNode : public ASTnode
 {
-private:
-	unique_ptr<VariableScope> _scope;
-public:
-	VariableScope *scope;
+  private:
+    unique_ptr<VariableScope> _scope;
 
-	ASTnode *local_decls()
-	{
-		return children[0].get();
-	}
+  public:
+    VariableScope *scope;
 
-	ASTnode *stmt_list()
-	{
-		return children[1].get();
-	}
+    ASTnode *local_decls()
+    {
+        return children[0].get();
+    }
 
-	virtual const string node_type() const
-	{
-		return "BLOCK";
-	}
+    ASTnode *stmt_list()
+    {
+        return children[1].get();
+    }
 
-	BlockNode();
-	virtual Value *codegen();
+    virtual const string node_type() const
+    {
+        return "BLOCK";
+    }
+
+    BlockNode();
+    virtual Value *codegen();
 };

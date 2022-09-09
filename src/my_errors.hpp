@@ -1,9 +1,9 @@
 #pragma once
 
-#include "llvm/IR/Value.h"
 #include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/Type.h"
 #include "llvm/IR/Instructions.h"
+#include "llvm/IR/Type.h"
+#include "llvm/IR/Value.h"
 
 #include "Token.hpp"
 #include "ValidTypes.hpp"
@@ -12,30 +12,42 @@ using std::exception;
 
 class semantic_error : exception
 {
-	string err_msg;
-public:
-	const int lineNo, columnNo;
-	string erroneous_token;
-	semantic_error(string err_msg);
-	semantic_error(string err_msg, int lineNo, int columnNo, string erroneous_token) : err_msg(move(err_msg)), lineNo(lineNo), columnNo(columnNo), erroneous_token(move(erroneous_token)) {}
-	virtual const char *what() const throw()
-	{
-		return err_msg.c_str();
-	}
+    string err_msg;
+
+  public:
+    const int lineNo, columnNo;
+    string erroneous_token;
+    semantic_error(string err_msg);
+    semantic_error(string err_msg, int lineNo, int columnNo,
+                   string erroneous_token)
+        : err_msg(move(err_msg)), lineNo(lineNo), columnNo(columnNo),
+          erroneous_token(move(erroneous_token))
+    {
+    }
+    virtual const char *what() const throw()
+    {
+        return err_msg.c_str();
+    }
 };
 
 class syntax_error : exception
 {
-	string err_msg;
-public:
-	const int lineNo, columnNo;
-	string erroneous_token;
-	syntax_error(string err_msg);
-	syntax_error(string err_msg, int lineNo, int columnNo, string erroneous_token) : err_msg(move(err_msg)), lineNo(lineNo), columnNo(columnNo), erroneous_token(move(erroneous_token)) {}
-	virtual const char *what() const throw()
-	{
-		return err_msg.c_str();
-	}
+    string err_msg;
+
+  public:
+    const int lineNo, columnNo;
+    string erroneous_token;
+    syntax_error(string err_msg);
+    syntax_error(string err_msg, int lineNo, int columnNo,
+                 string erroneous_token)
+        : err_msg(move(err_msg)), lineNo(lineNo), columnNo(columnNo),
+          erroneous_token(move(erroneous_token))
+    {
+    }
+    virtual const char *what() const throw()
+    {
+        return err_msg.c_str();
+    }
 };
 
 class compiler_error : exception
@@ -43,17 +55,23 @@ class compiler_error : exception
 // They are not something that will be emitted but here just for completeness
 // sake. Happens when a token that wasn't expected is received.
 {
-	string err_msg;
-public:
-	const int lineNo, columnNo;
-	string erroneous_token;
-	compiler_error();
-	compiler_error(string err_msg);
-	compiler_error(string err_msg, int lineNo, int columnNo, string erroneous_token) : err_msg(move(err_msg)), lineNo(lineNo), columnNo(columnNo), erroneous_token(move(erroneous_token)) {}
-	virtual const char *what() const throw()
-	{
-		return err_msg.c_str();
-	}
+    string err_msg;
+
+  public:
+    const int lineNo, columnNo;
+    string erroneous_token;
+    compiler_error();
+    compiler_error(string err_msg);
+    compiler_error(string err_msg, int lineNo, int columnNo,
+                   string erroneous_token)
+        : err_msg(move(err_msg)), lineNo(lineNo), columnNo(columnNo),
+          erroneous_token(move(erroneous_token))
+    {
+    }
+    virtual const char *what() const throw()
+    {
+        return err_msg.c_str();
+    }
 };
 
 extern string type_to_str(const char type);
@@ -62,4 +80,4 @@ extern string type_to_str(const char type);
 /// the function.  This is used for mutable variables etc.
 // Copied from Kaleidoscope tutorial
 // https://releases.llvm.org/10.0.0/docs/tutorial/MyFirstLanguageFrontend/LangImpl07.html
-extern AllocaInst *CreateEntryBlockAlloca(Type *VarType, const string& VarName);
+extern AllocaInst *CreateEntryBlockAlloca(Type *VarType, const string &VarName);

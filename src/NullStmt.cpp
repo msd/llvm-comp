@@ -4,5 +4,5 @@ extern LLVMContext TheContext;
 
 Value *NullStmt::codegen()
 {
-	return ConstantInt::getTrue(TheContext);
+    return ConstantInt::getTrue(TheContext);
 }

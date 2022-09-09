@@ -4,11 +4,11 @@
 
 class NullStmt : public ASTnode
 {
-public:
-	virtual const string node_type() const
-	{
-		return "NULL STMT";
-	}
+  public:
+    virtual const string node_type() const
+    {
+        return "NULL STMT";
+    }
 
-	virtual Value *codegen();
+    virtual Value *codegen();
 };

@@ -4,21 +4,21 @@
 
 class ParamsNode : public ASTnode
 {
-public:
-	ParamNode *get(int i)
-	{
-		return dynamic_cast<ParamNode *>(children[i].get());
-	}
+  public:
+    ParamNode *get(int i)
+    {
+        return dynamic_cast<ParamNode *>(children[i].get());
+    }
 
-	int param_count()
-	{
-		return children.size();
-	}
+    int param_count()
+    {
+        return children.size();
+    }
 
-	virtual const string node_type() const
-	{
-		return "PARAMS";
-	}
+    virtual const string node_type() const
+    {
+        return "PARAMS";
+    }
 
-	virtual Value *codegen();
+    virtual Value *codegen();
 };

@@ -6,11 +6,11 @@
 
 class ExternListNode : public ASTnode
 {
-public:
-	virtual const string node_type() const
-	{
-		return "EXTERN LIST";
-	}
+  public:
+    virtual const string node_type() const
+    {
+        return "EXTERN LIST";
+    }
 
-	virtual Value *codegen();
+    virtual Value *codegen();
 };

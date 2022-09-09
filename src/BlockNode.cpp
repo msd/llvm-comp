@@ -4,13 +4,13 @@
 
 BlockNode::BlockNode()
 {
-	_scope = VariableScope::inherit_vars(ActiveScopes.top());
-	scope  = _scope.get();
+    _scope = VariableScope::inherit_vars(ActiveScopes.top());
+    scope = _scope.get();
 }
 
 Value *BlockNode::codegen()
 {
-	local_decls()->codegen();
-	stmt_list()->codegen();
-	return Builder.getTrue();
+    local_decls()->codegen();
+    stmt_list()->codegen();
+    return Builder.getTrue();
 }

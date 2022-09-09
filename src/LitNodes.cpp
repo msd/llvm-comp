@@ -1,22 +1,21 @@
-#include "IntNode.hpp"
-#include "FloatNode.hpp"
 #include "BoolNode.hpp"
+#include "FloatNode.hpp"
+#include "IntNode.hpp"
 
 #include "the_externs.hpp"
 
 Value *IntNode::codegen()
 {
-	return ConstantInt::get(Type::getInt32Ty(TheContext), get_int(), true);
+    return ConstantInt::get(Type::getInt32Ty(TheContext), get_int(), true);
 }
-
 
 Value *BoolNode::codegen()
 {
-	return ConstantInt::get(Type::getInt1Ty(TheContext), get_bool()?1:0, false);
+    return ConstantInt::get(Type::getInt1Ty(TheContext), get_bool() ? 1 : 0,
+                            false);
 }
-
 
 Value *FloatNode::codegen()
 {
-	return ConstantFP::get(Type::getFloatTy(TheContext), get_float());
+    return ConstantFP::get(Type::getFloatTy(TheContext), get_float());
 }

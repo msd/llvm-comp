@@ -2,17 +2,17 @@
 
 #include <memory>
 
-#include "ParenExprNode.hpp"
-#include "NegationNode.hpp"
-#include "IntNode.hpp"
-#include "FloatNode.hpp"
 #include "BoolNode.hpp"
+#include "DeclListNode.hpp"
+#include "ExternListNode.hpp"
+#include "FloatNode.hpp"
+#include "FunDeclNode.hpp"
+#include "IntNode.hpp"
+#include "NegationNode.hpp"
 #include "NotNode.hpp"
 #include "ParamNode.hpp"
-#include "DeclListNode.hpp"
+#include "ParenExprNode.hpp"
 #include "ProgramNode.hpp"
-#include "ExternListNode.hpp"
-#include "FunDeclNode.hpp"
 
 unique_ptr<ParenExprNode> parse_paren_expr();
 unique_ptr<NegationNode> parse_neg_term();

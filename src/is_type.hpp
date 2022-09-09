@@ -1,7 +1,7 @@
 #pragma once
 
-#include "llvm/IR/Value.h"
 #include "llvm/IR/Type.h"
+#include "llvm/IR/Value.h"
 
 #include "ExprNode.hpp"
 

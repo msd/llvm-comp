@@ -4,5 +4,5 @@
 
 class DeclNode : public ASTnode
 {
-	virtual const string node_type() const = 0;
+    virtual const string node_type() const = 0;
 };

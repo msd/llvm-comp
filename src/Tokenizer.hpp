@@ -1,7 +1,7 @@
 #pragma once
 
-#include "TokenType.hpp"
 #include "Token.hpp"
+#include "TokenType.hpp"
 #include <deque>
 #include <vector>
 
@@ -9,10 +9,10 @@ using std::deque;
 using std::vector;
 
 extern string IdentifierStr; // Filled in if IDENT
-extern int IntVal; // Filled in if INT_LIT
-extern bool BoolVal; // Filled in if BOOL_LIT
-extern float FloatVal; // Filled in if FLOAT_LIT
-extern string StringVal; // Filled in if String Literal
+extern int IntVal;           // Filled in if INT_LIT
+extern bool BoolVal;         // Filled in if BOOL_LIT
+extern float FloatVal;       // Filled in if FLOAT_LIT
+extern string StringVal;     // Filled in if String Literal
 extern int lineNo, columnNo;
 
 int nextChar();
