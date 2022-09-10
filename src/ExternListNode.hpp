@@ -2,8 +2,6 @@
 
 #include "ASTnode.hpp"
 
-#include "ASTnode.hpp"
-
 class ExternListNode : public ASTnode
 {
   public:

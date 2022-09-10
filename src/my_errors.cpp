@@ -1,7 +1,7 @@
-#include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/Type.h"
-
 #include "my_errors.hpp"
+
+#include "llvm/IR/IRBuilder.h"
+
 #include "the_externs.hpp"
 
 semantic_error::semantic_error(string err_msg)

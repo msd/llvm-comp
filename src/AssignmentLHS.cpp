@@ -1,6 +1,6 @@
 #include "AssignmentLHS.hpp"
 
-extern IRBuilder<> Builder;
+#include "the_externs.hpp"
 
 Value *AssignmentLHS::codegen()
 {

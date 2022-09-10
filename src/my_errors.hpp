@@ -1,9 +1,6 @@
 #pragma once
 
 #include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/Instructions.h"
-#include "llvm/IR/Type.h"
-#include "llvm/IR/Value.h"
 
 #include "Token.hpp"
 #include "ValidTypes.hpp"

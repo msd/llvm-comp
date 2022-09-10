@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Token.hpp"
-#include "TokenType.hpp"
 #include <deque>
 #include <vector>
+
+#include "Token.hpp"
+#include "TokenType.hpp"
 
 using std::deque;
 using std::vector;

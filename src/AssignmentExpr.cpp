@@ -1,9 +1,8 @@
 #include "AssignmentExpr.hpp"
-#include "VariableScope.hpp"
+
 #include "coercion.hpp"
 #include "my_errors.hpp"
-
-extern IRBuilder<> Builder;
+#include "the_externs.hpp"
 
 Value *AssignmentExpr::codegen()
 {

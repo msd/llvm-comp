@@ -1,5 +1,7 @@
 #include "DeclListNode.hpp"
 
+#include "my_errors.hpp"
+
 Value *DeclListNode::codegen()
 {
     Value *v;
@@ -9,7 +11,7 @@ Value *DeclListNode::codegen()
         v = children[i]->codegen();
         if (!v)
         {
-            return nullptr;
+            throw compiler_error("decl statement could not be created");
         }
     }
     return v;

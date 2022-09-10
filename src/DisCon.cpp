@@ -1,8 +1,8 @@
 #include "DisCon.hpp"
-#include "coercion.hpp"
-#include "my_errors.hpp"
 
 #include "ValidTypes.hpp"
+#include "coercion.hpp"
+#include "my_errors.hpp"
 #include "the_externs.hpp"
 
 // Short-circuit evaluation of conjunction (boolean AND)

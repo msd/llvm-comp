@@ -4,9 +4,7 @@
 #include "VarDeclNode.hpp"
 #include "VariableScope.hpp"
 #include "my_errors.hpp"
-
-extern IRBuilder<> Builder;
-extern LLVMContext TheContext;
+#include "the_externs.hpp"
 
 Value *VarExprNode::codegen()
 {

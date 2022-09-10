@@ -1,8 +1,7 @@
 #include "FunctionSignature.hpp"
-#include "ValidTypes.hpp"
 
-extern unique_ptr<Module> TheModule;
-extern LLVMContext TheContext;
+#include "ValidTypes.hpp"
+#include "the_externs.hpp"
 
 FunctionSignature::FunctionSignature(string name, const char return_type,
                                      unique_ptr<ASTnode> params)

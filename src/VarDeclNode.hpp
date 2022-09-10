@@ -1,9 +1,8 @@
 #pragma once
 
 #include "DeclNode.hpp"
-#include "my_errors.hpp"
-
 #include "ValidTypes.hpp"
+#include "my_errors.hpp"
 
 class VariableScope;
 

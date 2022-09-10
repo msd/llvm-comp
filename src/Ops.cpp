@@ -2,6 +2,7 @@
 
 #include "ValidTypes.hpp"
 #include "coercion.hpp"
+#include "the_externs.hpp"
 
 Value *OpMULT::codegen()
 {

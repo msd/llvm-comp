@@ -2,7 +2,7 @@
 
 #include "llvm/IR/IRBuilder.h"
 
-extern IRBuilder<> Builder;
+#include "the_externs.hpp"
 
 Value *ExternListNode::codegen()
 {

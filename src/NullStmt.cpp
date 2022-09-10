@@ -1,6 +1,6 @@
 #include "NullStmt.hpp"
 
-extern LLVMContext TheContext;
+#include "the_externs.hpp"
 
 Value *NullStmt::codegen()
 {
