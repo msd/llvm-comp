@@ -36,7 +36,7 @@ void assert_tok_any(vector<TOKEN_TYPE> tok_types, string err_msg)
 {
     for (auto tok_type : tok_types)
     {
-        if (tok.CurTok.type == tok_type)
+        if (tok->CurTok.type == tok_type)
         {
             return;
         }
@@ -351,7 +351,7 @@ TOKEN Tokenizer::gettok()
 
 void assert_tok(TOKEN_TYPE tok_type, string err_msg)
 {
-    if (tok.CurTok.type != tok_type)
+    if (tok->CurTok.type != tok_type)
     {
         throw syntax_error(move(err_msg));
     }

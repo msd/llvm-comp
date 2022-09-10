@@ -58,7 +58,7 @@ FILE *pFile;
 
 LLVMContext TheContext;
 IRBuilder<> Builder(TheContext);
-Tokenizer tok{};
+unique_ptr<Tokenizer> tok;
 
 // Make the module, which holds all the code.
 unique_ptr<Module> TheModule = make_unique<Module>("mini-c", TheContext);
@@ -92,7 +92,7 @@ stack<VariableScope *> ActiveScopes;
 
 static unique_ptr<ASTnode> LogError(string err_txt)
 {
-    cerr << "line " << tok.CurTok.lineNo << " column " << tok.CurTok.columnNo
+    cerr << "line " << tok->CurTok.lineNo << " column " << tok->CurTok.columnNo
          << " error: " << err_txt << '\n';
     return nullptr;
 }
@@ -140,11 +140,9 @@ int main(int argc, char **argv)
     ActiveScopes.push(&globalScope);
     if (argc == 2)
     {
-        pFile = fopen(argv[1], "r");
-        if (pFile == NULL)
-        {
-            perror("Error opening file");
-        }
+        string filename = argv[1];
+        pFile = fopen(filename.c_str(), "r");
+        tok = make_unique<Tokenizer>();
     }
     else
     {
@@ -154,11 +152,11 @@ int main(int argc, char **argv)
     }
 
     // initialize line number and column numbers to zero
-    tok.lineNo = 1;
-    tok.columnNo = 1;
+    tok->lineNo = 1;
+    tok->columnNo = 1;
 
     // get the first token
-    tok.next();
+    tok->next();
     // while (CurTok.type != EOF_TOK) {
     //    fprintf(stderr, "Token: %s with type %d\n", CurTok.lexeme.c_str(),
     //                CurTok.type);
@@ -177,19 +175,19 @@ int main(int argc, char **argv)
     catch (syntax_error &e)
     {
         cerr << "Parsing ERROR on line " << e.lineNo << " column "
-             << tok.columnNo << " received token " << e.erroneous_token << endl
+             << tok->columnNo << " received token " << e.erroneous_token << endl
              << e.what() << '\n';
     }
     catch (semantic_error &e)
     {
         cerr << "Semantic ERROR on line " << e.lineNo << " column "
-             << tok.columnNo << " received token " << e.erroneous_token << endl
+             << tok->columnNo << " received token " << e.erroneous_token << endl
              << e.what() << '\n';
     }
     catch (compiler_error &e)
     {
         cerr << "Compiler ERROR on line " << e.lineNo << " column "
-             << tok.columnNo << " received token " << e.erroneous_token << endl
+             << tok->columnNo << " received token " << e.erroneous_token << endl
              << e.what() << '\n';
     }
 

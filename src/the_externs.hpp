@@ -25,4 +25,4 @@ extern stack<VariableScope *> ActiveScopes;
 extern map<string, FunDeclNode *> DefinedFunctions;
 extern map<string, FunctionSignature *> ExternedFunctions;
 extern FILE *pFile;
-extern Tokenizer tok;
+extern unique_ptr<Tokenizer> tok;
