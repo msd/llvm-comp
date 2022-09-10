@@ -72,10 +72,10 @@ class compiler_error : exception
     }
 };
 
-extern string type_to_str(const char type);
+string type_to_str(const char type);
 
 /// CreateEntryBlockAlloca - Create an alloca instruction in the entry block of
 /// the function.  This is used for mutable variables etc.
 // Copied from Kaleidoscope tutorial
 // https://releases.llvm.org/10.0.0/docs/tutorial/MyFirstLanguageFrontend/LangImpl07.html
-extern AllocaInst *CreateEntryBlockAlloca(Type *VarType, const string &VarName);
+AllocaInst *CreateEntryBlockAlloca(Type *VarType, const string &VarName);
