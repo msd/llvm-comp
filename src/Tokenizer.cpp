@@ -1,9 +1,9 @@
 #include "Tokenizer.hpp"
 
-#include <cstdio>
-
-#include "my_errors.hpp"
 #include "the_externs.hpp"
+
+using std::stof;
+using std::stoi;
 
 Tokenizer::Tokenizer(unique_ptr<ifstream> &&file) : file{move(file)}
 {
@@ -20,16 +20,17 @@ int Tokenizer::nextChar()
 
 TOKEN Tokenizer::next()
 {
-    if (tok_buffer.size() == 0)
+    if (tok_buffer.size())
     {
-        tok_buffer.push_back(gettok());
+        CurTok = tok_buffer.front();
+        tok_buffer.pop_front();
+    }
+    else
+    {
+        CurTok = gettok();
     }
 
-    TOKEN temp = tok_buffer.front();
-
-    tok_buffer.pop_front();
-
-    return CurTok = temp;
+    return CurTok;
 }
 
 void assert_tok_any(vector<TOKEN_TYPE> tok_types, string err_msg)
@@ -193,7 +194,7 @@ TOKEN Tokenizer::gettok()
                 columnNo++;
             } while (isdigit(LastChar));
 
-            FloatVal = strtof(NumStr.c_str(), nullptr);
+            FloatVal = stof(NumStr, nullptr);
             return returnTok(NumStr, FLOAT_LIT);
         }
         else
@@ -214,12 +215,12 @@ TOKEN Tokenizer::gettok()
                     columnNo++;
                 } while (isdigit(LastChar));
 
-                FloatVal = strtof(NumStr.c_str(), nullptr);
+                FloatVal = stof(NumStr, nullptr);
                 return returnTok(NumStr, FLOAT_LIT);
             }
             else // Integer : [0-9]+
             {
-                IntVal = strtod(NumStr.c_str(), nullptr);
+                IntVal = stoi(NumStr, nullptr);
                 return returnTok(NumStr, INT_LIT);
             }
         }
@@ -370,5 +371,18 @@ TOKEN Tokenizer::returnTok(string lexVal, int tok_type)
     return_tok.type = tok_type;
     return_tok.lineNo = lineNo;
     return_tok.columnNo = columnNo - lexVal.length() - 1;
+    return return_tok;
+}
+
+template <typename V>
+TokenWithValue<V> Tokenizer::retTokVal(string lexVal, int tok_type, V value)
+{
+    TokenWithValue<V> return_tok;
+
+    return_tok.lexeme = lexVal;
+    return_tok.type = tok_type;
+    return_tok.lineNo = lineNo;
+    return_tok.columnNo = columnNo - lexVal.length() - 1;
+    return_tok.value = value;
     return return_tok;
 }

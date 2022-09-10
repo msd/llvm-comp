@@ -12,3 +12,18 @@ struct TOKEN
     int lineNo;
     int columnNo;
 };
+
+template <class TokenVal> struct TokenWithValue : TOKEN
+{
+    TokenVal value;
+};
+
+struct TokenBool : TokenWithValue<bool>
+{
+};
+struct TokenInt : TokenWithValue<int>
+{
+};
+struct TokenFloat : TokenWithValue<float>
+{
+};

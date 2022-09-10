@@ -29,6 +29,9 @@ class Tokenizer
 
     unique_ptr<ifstream> file;
 
+    template <typename V>
+    TokenWithValue<V> retTokVal(string lexVal, int tok_type, V value);
+
   public:
     string IdentifierStr; // Filled in if IDENT
     int IntVal;           // Filled in if INT_LIT
