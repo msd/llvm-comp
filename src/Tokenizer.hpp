@@ -1,12 +1,17 @@
 #pragma once
 
 #include <deque>
+#include <fstream>
+#include <memory>
 #include <vector>
 
 #include "Token.hpp"
 #include "TokenType.hpp"
 
 using std::deque;
+using std::ifstream;
+using std::string;
+using std::unique_ptr;
 using std::vector;
 
 class Tokenizer
@@ -22,6 +27,8 @@ class Tokenizer
     /// gettok - Return the next token from standard input.
     TOKEN gettok();
 
+    unique_ptr<ifstream> file;
+
   public:
     string IdentifierStr; // Filled in if IDENT
     int IntVal;           // Filled in if INT_LIT
@@ -35,7 +42,7 @@ class Tokenizer
     /// token from the lexer and updates CurTok with its results.
     TOKEN CurTok;
 
-    Tokenizer(/* args */);
+    Tokenizer(unique_ptr<ifstream> &&);
     ~Tokenizer();
 
     TOKEN next();

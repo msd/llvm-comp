@@ -5,7 +5,7 @@
 #include "my_errors.hpp"
 #include "the_externs.hpp"
 
-Tokenizer::Tokenizer(/* args */)
+Tokenizer::Tokenizer(unique_ptr<ifstream> &&file) : file{move(file)}
 {
 }
 
@@ -15,7 +15,7 @@ Tokenizer::~Tokenizer()
 
 int Tokenizer::nextChar()
 {
-    return getc(pFile);
+    return file->get();
 }
 
 TOKEN Tokenizer::next()

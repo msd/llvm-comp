@@ -1,6 +1,6 @@
+#include <fstream>
 #include <iostream>
 #include <map>
-#include <queue>
 #include <stack>
 
 #include "llvm/IR/IRBuilder.h"
@@ -53,8 +53,6 @@ using std::stack;
 using std::string;
 using std::unique_ptr;
 using std::vector;
-
-FILE *pFile;
 
 LLVMContext TheContext;
 IRBuilder<> Builder(TheContext);
@@ -138,18 +136,17 @@ int main(int argc, char **argv)
     auto globalScope = VariableScope();
 
     ActiveScopes.push(&globalScope);
-    if (argc == 2)
-    {
-        string filename = argv[1];
-        pFile = fopen(filename.c_str(), "r");
-        tok = make_unique<Tokenizer>();
-    }
-    else
+
+    if (argc != 2)
     {
         string compilerPath = argv[0];
         cout << "Usage: " << compilerPath << " InputFile\n";
         return 1;
     }
+
+    string file_path = argv[1];
+    auto source_file = make_unique<ifstream>(file_path);
+    tok = make_unique<Tokenizer>(move(source_file));
 
     // initialize line number and column numbers to zero
     tok->lineNo = 1;
@@ -206,6 +203,5 @@ int main(int argc, char **argv)
     TheModule->print(dest, nullptr);
     //********************* End printing final IR ****************************
 
-    fclose(pFile); // close the file that contains the code that was parsed
     return 0;
 }
