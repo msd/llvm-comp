@@ -11,23 +11,7 @@ using std::vector;
 
 class Tokenizer
 {
-  public:
-    string IdentifierStr; // Filled in if IDENT
-    int IntVal;           // Filled in if INT_LIT
-    bool BoolVal;         // Filled in if BOOL_LIT
-    float FloatVal;       // Filled in if FLOAT_LIT
-    string StringVal;     // Filled in if String Literal
-    int lineNo, columnNo;
-
-    /// CurTok/getNextToken - Provide a simple token buffer.  CurTok is the
-    /// current token the parser is looking at.  getNextToken reads another
-    /// token from the lexer and updates CurTok with its results.
-    TOKEN CurTok;
-
     deque<TOKEN> tok_buffer;
-
-    Tokenizer(/* args */);
-    ~Tokenizer();
 
     int nextChar();
 
@@ -38,9 +22,25 @@ class Tokenizer
     /// gettok - Return the next token from standard input.
     TOKEN gettok();
 
-    TOKEN getNextToken();
+  public:
+    string IdentifierStr; // Filled in if IDENT
+    int IntVal;           // Filled in if INT_LIT
+    bool BoolVal;         // Filled in if BOOL_LIT
+    float FloatVal;       // Filled in if FLOAT_LIT
+    string StringVal;     // Filled in if String Literal
+    int lineNo, columnNo;
 
-    void putBackToken(TOKEN tok);
+    /// CurTok/next - Provide a simple token buffer.  CurTok is the
+    /// current token the parser is looking at.  next reads another
+    /// token from the lexer and updates CurTok with its results.
+    TOKEN CurTok;
+
+    Tokenizer(/* args */);
+    ~Tokenizer();
+
+    TOKEN next();
+
+    void put_back(TOKEN tok);
 };
 
 void assert_tok(TOKEN_TYPE tok_type, string err_msg);

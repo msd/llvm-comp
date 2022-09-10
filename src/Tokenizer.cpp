@@ -18,7 +18,7 @@ int Tokenizer::nextChar()
     return getc(pFile);
 }
 
-TOKEN Tokenizer::getNextToken()
+TOKEN Tokenizer::next()
 {
     if (tok_buffer.size() == 0)
     {
@@ -357,7 +357,7 @@ void assert_tok(TOKEN_TYPE tok_type, string err_msg)
     }
 }
 
-void Tokenizer::putBackToken(TOKEN tok)
+void Tokenizer::put_back(TOKEN tok)
 {
     tok_buffer.push_front(tok);
 }

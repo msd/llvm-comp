@@ -158,11 +158,11 @@ int main(int argc, char **argv)
     tok.columnNo = 1;
 
     // get the first token
-    tok.getNextToken();
+    tok.next();
     // while (CurTok.type != EOF_TOK) {
     //    fprintf(stderr, "Token: %s with type %d\n", CurTok.lexeme.c_str(),
     //                CurTok.type);
-    //    getNextToken();
+    //    next();
     // }
     cerr << "Lexer Finished\n";
 
@@ -176,21 +176,21 @@ int main(int argc, char **argv)
     }
     catch (syntax_error &e)
     {
-        cerr << "Parsing ERROR on line " << e.lineNo << " column " << tok.columnNo
-             << " received token " << e.erroneous_token << endl;
-        cerr << e.what() << '\n';
+        cerr << "Parsing ERROR on line " << e.lineNo << " column "
+             << tok.columnNo << " received token " << e.erroneous_token << endl
+             << e.what() << '\n';
     }
     catch (semantic_error &e)
     {
-        cerr << "Semantic ERROR on line " << e.lineNo << " column " << tok.columnNo
-             << " received token " << e.erroneous_token << endl;
-        cerr << e.what() << '\n';
+        cerr << "Semantic ERROR on line " << e.lineNo << " column "
+             << tok.columnNo << " received token " << e.erroneous_token << endl
+             << e.what() << '\n';
     }
     catch (compiler_error &e)
     {
-        cerr << "Compiler ERROR on line " << e.lineNo << " column " << tok.columnNo
-             << " received token " << e.erroneous_token << endl;
-        cerr << e.what() << '\n';
+        cerr << "Compiler ERROR on line " << e.lineNo << " column "
+             << tok.columnNo << " received token " << e.erroneous_token << endl
+             << e.what() << '\n';
     }
 
     //********************* Start printing final IR **************************
