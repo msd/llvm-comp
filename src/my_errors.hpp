@@ -5,6 +5,7 @@
 #include "Token.hpp"
 #include "ValidTypes.hpp"
 
+using namespace llvm;
 using std::exception;
 
 class semantic_error : exception
