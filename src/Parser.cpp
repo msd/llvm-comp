@@ -127,7 +127,7 @@ unique_ptr<RvalNode> parse_rval_var_or_fun()
     assert_tok(IDENT, "Expected identifier");
     auto ident_name = tok->CurTok.lexeme;
 
-    tok->next();            // Consume IDENT
+    tok->next();                  // Consume IDENT
     if (tok->CurTok.type == LPAR) // Parse Function call
     {
         auto fun_call = make_unique<FunCallNode>(ident_name);
@@ -625,7 +625,7 @@ unique_ptr<ASTnode> parse_return_stmt()
 {
     assert_tok(RETURN, "Expected return keyword at the start of return "
                        "statement. This should not happen :{");
-    tok->next();          // Consume "return"
+    tok->next();                // Consume "return"
     if (tok->CurTok.type == SC) // Return nothing
     {
         tok->next(); // Consume ';'
