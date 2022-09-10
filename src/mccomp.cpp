@@ -56,13 +56,9 @@ using std::vector;
 
 FILE *pFile;
 
-/// CurTok/getNextToken - Provide a simple token buffer.  CurTok is the current
-/// token the parser is looking at.  getNextToken reads another token from the
-/// lexer and updates CurTok with its results.
-TOKEN CurTok;
-
 LLVMContext TheContext;
 IRBuilder<> Builder(TheContext);
+Tokenizer tok{};
 
 // Make the module, which holds all the code.
 unique_ptr<Module> TheModule = make_unique<Module>("mini-c", TheContext);
@@ -96,7 +92,7 @@ stack<VariableScope *> ActiveScopes;
 
 static unique_ptr<ASTnode> LogError(string err_txt)
 {
-    cerr << "line " << CurTok.lineNo << " column " << CurTok.columnNo
+    cerr << "line " << tok.CurTok.lineNo << " column " << tok.CurTok.columnNo
          << " error: " << err_txt << '\n';
     return nullptr;
 }
@@ -158,11 +154,11 @@ int main(int argc, char **argv)
     }
 
     // initialize line number and column numbers to zero
-    lineNo = 1;
-    columnNo = 1;
+    tok.lineNo = 1;
+    tok.columnNo = 1;
 
     // get the first token
-    getNextToken();
+    tok.getNextToken();
     // while (CurTok.type != EOF_TOK) {
     //    fprintf(stderr, "Token: %s with type %d\n", CurTok.lexeme.c_str(),
     //                CurTok.type);
@@ -180,19 +176,19 @@ int main(int argc, char **argv)
     }
     catch (syntax_error &e)
     {
-        cerr << "Parsing ERROR on line " << e.lineNo << " column " << columnNo
+        cerr << "Parsing ERROR on line " << e.lineNo << " column " << tok.columnNo
              << " received token " << e.erroneous_token << endl;
         cerr << e.what() << '\n';
     }
     catch (semantic_error &e)
     {
-        cerr << "Semantic ERROR on line " << e.lineNo << " column " << columnNo
+        cerr << "Semantic ERROR on line " << e.lineNo << " column " << tok.columnNo
              << " received token " << e.erroneous_token << endl;
         cerr << e.what() << '\n';
     }
     catch (compiler_error &e)
     {
-        cerr << "Compiler ERROR on line " << e.lineNo << " column " << columnNo
+        cerr << "Compiler ERROR on line " << e.lineNo << " column " << tok.columnNo
              << " received token " << e.erroneous_token << endl;
         cerr << e.what() << '\n';
     }

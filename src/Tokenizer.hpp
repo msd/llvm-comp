@@ -9,25 +9,39 @@
 using std::deque;
 using std::vector;
 
-extern string IdentifierStr; // Filled in if IDENT
-extern int IntVal;           // Filled in if INT_LIT
-extern bool BoolVal;         // Filled in if BOOL_LIT
-extern float FloatVal;       // Filled in if FLOAT_LIT
-extern string StringVal;     // Filled in if String Literal
-extern int lineNo, columnNo;
+class Tokenizer
+{
+  public:
+    string IdentifierStr; // Filled in if IDENT
+    int IntVal;           // Filled in if INT_LIT
+    bool BoolVal;         // Filled in if BOOL_LIT
+    float FloatVal;       // Filled in if FLOAT_LIT
+    string StringVal;     // Filled in if String Literal
+    int lineNo, columnNo;
 
-int nextChar();
+    /// CurTok/getNextToken - Provide a simple token buffer.  CurTok is the
+    /// current token the parser is looking at.  getNextToken reads another
+    /// token from the lexer and updates CurTok with its results.
+    TOKEN CurTok;
 
-TOKEN returnTok(string lexVal, int tok_type);
+    deque<TOKEN> tok_buffer;
 
-// Read file line by line -- or look for \n and if found add 1 to line number
-// and reset column number to 0
-/// gettok - Return the next token from standard input.
-TOKEN gettok();
+    Tokenizer(/* args */);
+    ~Tokenizer();
 
-TOKEN getNextToken();
+    int nextChar();
 
-void putBackToken(TOKEN tok);
+    TOKEN returnTok(string lexVal, int tok_type);
+
+    // Read file line by line -- or look for \n and if found add 1 to line
+    // number and reset column number to 0
+    /// gettok - Return the next token from standard input.
+    TOKEN gettok();
+
+    TOKEN getNextToken();
+
+    void putBackToken(TOKEN tok);
+};
 
 void assert_tok(TOKEN_TYPE tok_type, string err_msg);
 

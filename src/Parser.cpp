@@ -28,32 +28,32 @@ using std::move;
 unique_ptr<ParenExprNode> parse_paren_expr()
 {
     assert_tok(LPAR, "Expected opening parenthesis '('");
-    getNextToken(); // Consume open parenthesis '('
+    tok.getNextToken(); // Consume open parenthesis '('
     auto r = parse_rval();
 
     assert_tok(RPAR, "Expected closing parenthesis ')' after rvalue");
-    getNextToken(); // Consume closing parenthesis ')'
+    tok.getNextToken(); // Consume closing parenthesis ')'
     return make_unique<ParenExprNode>(move(r));
 }
 
 unique_ptr<NegationNode> parse_neg_term()
 {
     assert_tok(MINUS, "Expected minus '-'");
-    getNextToken(); // Consume minus '-'
+    tok.getNextToken(); // Consume minus '-'
     return make_unique<NegationNode>(parse_rval());
 }
 
 unique_ptr<ExprNode> parse_expr()
 {
-    if (CurTok.type == IDENT)
+    if (tok.CurTok.type == IDENT)
     {
-        auto ident_tok = CurTok;
-        auto ident_name = CurTok.lexeme;
-        getNextToken(); // Consume IDENT
-        auto peek = CurTok;
-        if (CurTok.type == ASSIGN)
+        auto ident_tok = tok.CurTok;
+        auto ident_name = tok.CurTok.lexeme;
+        tok.getNextToken(); // Consume IDENT
+        auto peek = tok.CurTok;
+        if (tok.CurTok.type == ASSIGN)
         {
-            getNextToken(); // Consume '='
+            tok.getNextToken(); // Consume '='
             auto lhs = make_unique<AssignmentLHS>(ident_name);
             return make_unique<AssignmentExpr>(ActiveScopes.top(), move(lhs),
                                                parse_expr());
@@ -67,9 +67,9 @@ unique_ptr<ExprNode> parse_expr()
             // consecutive identifier tokens don't constitute a valid sentece of
             // this grammar hence should emit an error further down the
             // recursion anyway
-            putBackToken(peek);
-            CurTok = ident_tok;
-            IdentifierStr = ident_name;
+            tok.putBackToken(peek);
+            tok.CurTok = ident_tok;
+            tok.IdentifierStr = ident_name;
             return parse_rval();
         }
     }
@@ -83,13 +83,13 @@ vector<unique_ptr<ASTnode>> parse_args()
 {
     auto args = vector<unique_ptr<ASTnode>>();
 
-    while (CurTok.type != RPAR)
+    while (tok.CurTok.type != RPAR)
     {
         // todo check if current token is type
         args.push_back(parse_expr());
-        if (CurTok.type == COMMA)
+        if (tok.CurTok.type == COMMA)
         {
-            getNextToken(); // Consume ","
+            tok.getNextToken(); // Consume ","
         }
     }
     return args;
@@ -98,46 +98,46 @@ vector<unique_ptr<ASTnode>> parse_args()
 unique_ptr<FloatNode> parse_rval_FLOAT_LIT()
 {
     assert_tok(FLOAT_LIT, "Expected float literal");
-    auto r = make_unique<FloatNode>(FloatVal);
+    auto r = make_unique<FloatNode>(tok.FloatVal);
 
-    getNextToken(); // Consume FLOAT_LIT
+    tok.getNextToken(); // Consume FLOAT_LIT
     return r;
 }
 
 unique_ptr<IntNode> parse_rval_INT_LIT()
 {
     assert_tok(INT_LIT, "Expected int literal");
-    auto r = make_unique<IntNode>(IntVal);
+    auto r = make_unique<IntNode>(tok.IntVal);
 
-    getNextToken(); // Consume INT_LIT
+    tok.getNextToken(); // Consume INT_LIT
     return r;
 }
 
 unique_ptr<BoolNode> parse_rval_BOOL_LIT()
 {
     assert_tok(BOOL_LIT, "Expected bool literal");
-    auto r = make_unique<BoolNode>(BoolVal);
+    auto r = make_unique<BoolNode>(tok.BoolVal);
 
-    getNextToken(); // Consume BOOL_LIT
+    tok.getNextToken(); // Consume BOOL_LIT
     return r;
 }
 
 unique_ptr<RvalNode> parse_rval_var_or_fun()
 {
     assert_tok(IDENT, "Expected identifier");
-    auto ident_name = CurTok.lexeme;
+    auto ident_name = tok.CurTok.lexeme;
 
-    getNextToken();          // Consume IDENT
-    if (CurTok.type == LPAR) // Parse Function call
+    tok.getNextToken();          // Consume IDENT
+    if (tok.CurTok.type == LPAR) // Parse Function call
     {
         auto fun_call = make_unique<FunCallNode>(ident_name);
         assert_tok(LPAR, "This should not happen :(");
-        getNextToken(); // Consume opening paren "("
+        tok.getNextToken(); // Consume opening paren "("
         fun_call->setSubs(parse_args());
         assert_tok(
             RPAR,
             "Expected closing right parenthesis ')' after function arguments");
-        getNextToken(); // Consume closing paren ')'
+        tok.getNextToken(); // Consume closing paren ')'
         return fun_call;
     }
     else // Parse Var
@@ -160,13 +160,13 @@ unique_ptr<RvalNode> parse_rval_var_or_fun()
 unique_ptr<NotNode> parse_not_term()
 {
     assert_tok(NOT, "Expected '!'");
-    getNextToken(); // Consume "!"
+    tok.getNextToken(); // Consume "!"
     return make_unique<NotNode>(parse_rval());
 }
 
 unique_ptr<ExprNode> parse_rval_term()
 {
-    switch (CurTok.type)
+    switch (tok.CurTok.type)
     {
     case INT_LIT:
         return parse_rval_INT_LIT();
@@ -200,22 +200,22 @@ unique_ptr<ExprNode> parse_rval_multiplication()
     {
         char l_type, r_type;
         unique_ptr<ASTnode> rhs;
-        switch (CurTok.type)
+        switch (tok.CurTok.type)
         {
         case ASTERISK:
-            getNextToken(); // consume "*"
+            tok.getNextToken(); // consume "*"
             to_be_returned =
                 make_unique<OpMULT>(move(to_be_returned), parse_rval_term());
             break;
 
         case DIV:
-            getNextToken(); // consume "/"
+            tok.getNextToken(); // consume "/"
             to_be_returned =
                 make_unique<OpDIV>(move(to_be_returned), parse_rval_term());
             break;
 
         case MOD:
-            getNextToken(); // consume "%"
+            tok.getNextToken(); // consume "%"
             l_type =
                 dynamic_cast<RvalNode *>(to_be_returned.get())->expr_type();
             r_type = dynamic_cast<RvalNode *>(rhs.get())->expr_type();
@@ -245,16 +245,16 @@ unique_ptr<ExprNode> parse_rval_addition()
 
     while (loop)
     {
-        switch (CurTok.type)
+        switch (tok.CurTok.type)
         {
         case PLUS:
-            getNextToken(); // consume "+"
+            tok.getNextToken(); // consume "+"
             to_be_returned = make_unique<OpADD>(move(to_be_returned),
                                                 parse_rval_multiplication());
             break;
 
         case MINUS:
-            getNextToken(); // consume "-"
+            tok.getNextToken(); // consume "-"
             to_be_returned = make_unique<OpSUB>(move(to_be_returned),
                                                 parse_rval_multiplication());
             break;
@@ -273,28 +273,28 @@ unique_ptr<ExprNode> parse_rval_inequality()
 
     while (loop)
     {
-        switch (CurTok.type)
+        switch (tok.CurTok.type)
         {
         case LT:
-            getNextToken(); // consume "<"
+            tok.getNextToken(); // consume "<"
             to_be_returned =
                 make_unique<OpLT>(move(to_be_returned), parse_rval_addition());
             break;
 
         case LE:
-            getNextToken(); // consume "<="
+            tok.getNextToken(); // consume "<="
             to_be_returned =
                 make_unique<OpLE>(move(to_be_returned), parse_rval_addition());
             break;
 
         case GE:
-            getNextToken(); // consume ">="
+            tok.getNextToken(); // consume ">="
             to_be_returned =
                 make_unique<OpGE>(move(to_be_returned), parse_rval_addition());
             break;
 
         case GT:
-            getNextToken(); // consume ">"
+            tok.getNextToken(); // consume ">"
             to_be_returned =
                 make_unique<OpGT>(move(to_be_returned), parse_rval_addition());
             break;
@@ -314,16 +314,16 @@ unique_ptr<ExprNode> parse_rval_equality()
 
     while (loop)
     {
-        switch (CurTok.type)
+        switch (tok.CurTok.type)
         {
         case EQ:
-            getNextToken(); // consume "=="
+            tok.getNextToken(); // consume "=="
             to_be_returned = make_unique<OpEQ>(move(to_be_returned),
                                                parse_rval_inequality());
             break;
 
         case NE:
-            getNextToken(); // consume "!="
+            tok.getNextToken(); // consume "!="
             to_be_returned = make_unique<OpNE>(move(to_be_returned),
                                                parse_rval_inequality());
             break;
@@ -340,13 +340,13 @@ unique_ptr<ExprNode> parse_rval_conjunction()
 {
     auto equality = parse_rval_equality();
 
-    if (CurTok.type == AND)
+    if (tok.CurTok.type == AND)
     {
         auto to_be_returned = make_unique<ConjunctionNode>();
         to_be_returned->addSub(move(equality));
-        while (CurTok.type == AND)
+        while (tok.CurTok.type == AND)
         {
-            getNextToken(); // consume "&&"
+            tok.getNextToken(); // consume "&&"
             to_be_returned->addSub(parse_rval_equality());
         }
         return to_be_returned;
@@ -359,13 +359,13 @@ unique_ptr<ExprNode> parse_rval()
 {
     auto con = parse_rval_conjunction();
 
-    if (CurTok.type == OR)
+    if (tok.CurTok.type == OR)
     {
         auto to_be_returned = make_unique<DisjunctionNode>();
         to_be_returned->addSub(move(con));
-        while (CurTok.type == OR)
+        while (tok.CurTok.type == OR)
         {
-            getNextToken(); // consume "||"
+            tok.getNextToken(); // consume "||"
             to_be_returned->addSub(parse_rval_conjunction());
         }
         return to_be_returned;
@@ -379,7 +379,7 @@ unique_ptr<ParamNode> parse_param()
 {
     int param_type = 0;
 
-    switch (CurTok.type)
+    switch (tok.CurTok.type)
     {
     case INT_TOK:
         param_type = INT_TYPE;
@@ -396,11 +396,11 @@ unique_ptr<ParamNode> parse_param()
     default:
         throw syntax_error("Invalid param type");
     }
-    getNextToken(); // Consume type token
+    tok.getNextToken(); // Consume type token
     assert_tok(IDENT, "Identifier must follow type in parameter list");
-    auto r = make_unique<ParamNode>(CurTok.lexeme, param_type);
+    auto r = make_unique<ParamNode>(tok.CurTok.lexeme, param_type);
 
-    getNextToken(); // Consume IDENT
+    tok.getNextToken(); // Consume IDENT
     return r;
 }
 
@@ -408,22 +408,22 @@ unique_ptr<ASTnode> parse_params()
 {
     auto params = make_unique<ParamsNode>();
 
-    if (CurTok.type == VOID_TOK)
+    if (tok.CurTok.type == VOID_TOK)
     {
-        getNextToken(); // Consume "void"
+        tok.getNextToken(); // Consume "void"
         assert_tok(RPAR, "Expected closing parenthesis after void keyword in "
                          "parameter list");
         return params;
     }
-    if (CurTok.type == RPAR)
+    if (tok.CurTok.type == RPAR)
     {
         return params;
     }
     params->addSub(parse_param());
-    while (CurTok.type != RPAR)
+    while (tok.CurTok.type != RPAR)
     {
         assert_tok(COMMA, "Expected comma after parameter in parameter list");
-        getNextToken(); // Consume ','
+        tok.getNextToken(); // Consume ','
         params->addSub(parse_param());
     }
     return params;
@@ -432,10 +432,10 @@ unique_ptr<ASTnode> parse_params()
 unique_ptr<ASTnode> parse_extern()
 {
     assert_tok(EXTERN, "Expected 'extern' keyword");
-    getNextToken(); // Consume "extern"
+    tok.getNextToken(); // Consume "extern"
     char return_type;
 
-    switch (CurTok.type)
+    switch (tok.CurTok.type)
     {
     case INT_TOK:
         return_type = INT_TYPE;
@@ -456,28 +456,28 @@ unique_ptr<ASTnode> parse_extern()
     default:
         throw syntax_error("Type must follow extern keyword");
     }
-    assert(CurTok.type == INT_TOK || CurTok.type == FLOAT_TOK ||
-           CurTok.type == BOOL_TOK || CurTok.type == VOID_TOK);
-    getNextToken(); // Consume type token
+    assert(tok.CurTok.type == INT_TOK || tok.CurTok.type == FLOAT_TOK ||
+           tok.CurTok.type == BOOL_TOK || tok.CurTok.type == VOID_TOK);
+    tok.getNextToken(); // Consume type token
     assert_tok(IDENT, "Expected function name directly after extern keyword");
-    auto fun_name = CurTok.lexeme;
+    auto fun_name = tok.CurTok.lexeme;
 
     if (ExternedFunctions.count(fun_name))
     {
         throw semantic_error("Attempted to redefine extern function " +
                              fun_name);
     }
-    getNextToken(); // Consume IDENT
+    tok.getNextToken(); // Consume IDENT
     assert_tok(LPAR,
                "Expected opening left parenthesis '(' after function name");
-    getNextToken(); // Consume "("
+    tok.getNextToken(); // Consume "("
     auto fun_params = parse_params();
 
     assert_tok(RPAR,
                "Expected closing right parenthesis ')' after parameter list");
-    getNextToken(); // Consume ")"
+    tok.getNextToken(); // Consume ")"
     assert_tok(SC, "Expected semicolon after extern function signature");
-    getNextToken(); // Consume ";"
+    tok.getNextToken(); // Consume ";"
     auto tbr =
         make_unique<FunctionSignature>(fun_name, return_type, move(fun_params));
 
@@ -488,7 +488,7 @@ unique_ptr<ExternListNode> parse_extern_list()
 {
     auto extern_list = make_unique<ExternListNode>();
 
-    while (CurTok.type == EXTERN)
+    while (tok.CurTok.type == EXTERN)
     {
         extern_list->addSub(parse_extern());
     }
@@ -503,7 +503,7 @@ unique_ptr<ASTnode> parse_local_decls()
     while (loop)
     {
         char var_type;
-        switch (CurTok.type)
+        switch (tok.CurTok.type)
         {
         case INT_TOK:
             var_type = INT_TYPE;
@@ -522,20 +522,20 @@ unique_ptr<ASTnode> parse_local_decls()
         }
         if (loop)
         {
-            getNextToken(); // Consume type tok
+            tok.getNextToken(); // Consume type tok
             assert_tok(IDENT,
                        "Expected identifier after type in local declaration");
 
-            auto var_name = CurTok.lexeme;
+            auto var_name = tok.CurTok.lexeme;
             auto decl = make_unique<VarDeclNode>(ActiveScopes.top(), var_name,
                                                  var_type, false);
             ActiveScopes.top()->setDecl(var_name, decl.get());
             local_decls->addSub(move(decl));
 
-            getNextToken(); // Consume IDENT
+            tok.getNextToken(); // Consume IDENT
             assert_tok(
                 SC, "Expected semicolon ';' at the end of local declaration");
-            getNextToken(); // Consume ';'
+            tok.getNextToken(); // Consume ';'
         }
     }
     return local_decls;
@@ -544,16 +544,16 @@ unique_ptr<ASTnode> parse_local_decls()
 unique_ptr<ASTnode> parse_expr_stmt()
 {
     // todo check current token
-    if (CurTok.type == SC)
+    if (tok.CurTok.type == SC)
     {
-        getNextToken(); // Consume ';'
+        tok.getNextToken(); // Consume ';'
         return make_unique<NullStmt>();
     }
 
     auto expr_stmt = parse_expr();
 
     assert_tok(SC, "Expected semicolon ';' at the end of expression");
-    getNextToken(); // Consume ';'
+    tok.getNextToken(); // Consume ';'
     return expr_stmt;
 }
 
@@ -564,12 +564,12 @@ unique_ptr<ASTnode> parse_block()
     ActiveScopes.push(new_block->scope);
 
     assert_tok(LBRA, "Expected opening left brace '{' at the start of block");
-    getNextToken(); // Consume "{"
+    tok.getNextToken(); // Consume "{"
     auto decls = parse_local_decls();
     auto stmts = parse_stmt_list();
 
     assert_tok(RBRA, "Expected closing right brace '}' at the start of block");
-    getNextToken(); // Consume "}"
+    tok.getNextToken(); // Consume "}"
     new_block->addSub(move(stmts));
     new_block->addSub(move(decls));
     ActiveScopes.pop();
@@ -580,19 +580,19 @@ unique_ptr<ASTnode> parse_if_stmt()
 {
     assert_tok(
         IF, "Expected if at start of if-statement. This should not happen :(");
-    getNextToken(); // Consume "if"
+    tok.getNextToken(); // Consume "if"
     assert_tok(LPAR, "Expected opening left parenthesis '(' after if keyword");
-    getNextToken(); // Consume '('
+    tok.getNextToken(); // Consume '('
     auto if_cond = parse_expr();
 
     assert_tok(RPAR,
                "Expected closing right parenthesis ')' after if condition");
-    getNextToken(); // Consume ')'
+    tok.getNextToken(); // Consume ')'
     auto if_body = parse_block();
 
-    if (CurTok.type == ELSE)
+    if (tok.CurTok.type == ELSE)
     {
-        getNextToken(); // Consume "else"
+        tok.getNextToken(); // Consume "else"
         auto else_body = parse_block();
         return make_unique<IfWithElseNode>(move(if_cond), move(if_body),
                                            move(else_body));
@@ -607,15 +607,15 @@ unique_ptr<ASTnode> parse_while_stmt()
 {
     assert_tok(WHILE, "Expected while keyword at the start of while loop. This "
                       "should not happen :(");
-    getNextToken(); // Consume "while"
+    tok.getNextToken(); // Consume "while"
     assert_tok(LPAR,
                "Expected opening left parenthesis '(' after while keyword");
-    getNextToken(); // Consume '('
+    tok.getNextToken(); // Consume '('
     auto condition = parse_expr();
 
     assert_tok(RPAR,
                "Expected closing right parenthesis ')' after while condition");
-    getNextToken(); // Consume ')'
+    tok.getNextToken(); // Consume ')'
     auto loop_body = parse_stmt();
 
     return make_unique<WhileStmt>(move(condition), move(loop_body));
@@ -625,24 +625,24 @@ unique_ptr<ASTnode> parse_return_stmt()
 {
     assert_tok(RETURN, "Expected return keyword at the start of return "
                        "statement. This should not happen :{");
-    getNextToken();        // Consume "return"
-    if (CurTok.type == SC) // Return nothing
+    tok.getNextToken();        // Consume "return"
+    if (tok.CurTok.type == SC) // Return nothing
     {
-        getNextToken(); // Consume ';'
+        tok.getNextToken(); // Consume ';'
         return make_unique<ReturnNothingNode>();
     }
     else // Return expr
     {
         auto stmt = make_unique<ReturnValueNode>(parse_expr());
         assert_tok(SC, "Expected semicolon ';' after return statement");
-        getNextToken(); // Consume ';'
+        tok.getNextToken(); // Consume ';'
         return stmt;
     }
 }
 
 unique_ptr<ASTnode> parse_stmt()
 {
-    switch (CurTok.type)
+    switch (tok.CurTok.type)
     {
     case LBRA:
         return parse_block();
@@ -665,7 +665,7 @@ unique_ptr<ASTnode> parse_stmt_list()
 {
     auto stmt_list = make_unique<StmtListNode>();
 
-    while (CurTok.type != RBRA)
+    while (tok.CurTok.type != RBRA)
     {
         stmt_list->addSub(parse_stmt());
     }
@@ -677,13 +677,13 @@ unique_ptr<ASTnode> parse_decl()
 {
     assert_tok_any({INT_TOK, FLOAT_TOK, BOOL_TOK, VOID_TOK},
                    "Expected type keyword at the start of declaration");
-    if (CurTok.type == VOID_TOK)
+    if (tok.CurTok.type == VOID_TOK)
     {
         auto fun_type = VOID_TYPE;
         // Parse a void function
-        getNextToken(); // Consume "void"
+        tok.getNextToken(); // Consume "void"
         assert_tok(IDENT, "Expected identifier after void keyword");
-        auto fun_name = CurTok.lexeme;
+        auto fun_name = tok.CurTok.lexeme;
         if (ActiveScopes.top()->getDecl(fun_name))
         {
             throw semantic_error("Name " + fun_name +
@@ -700,15 +700,15 @@ unique_ptr<ASTnode> parse_decl()
             throw semantic_error("Function " + fun_name +
                                  " has already been defined previously");
         }
-        getNextToken(); // Consume IDENT
+        tok.getNextToken(); // Consume IDENT
         assert_tok(LPAR,
                    "Expected opening left parenthesis '(' after identifier");
-        getNextToken(); // Consume '('
+        tok.getNextToken(); // Consume '('
         auto fun_params = parse_params();
         assert_tok(
             RPAR,
             "Expected closing right parenthesis ')' after parameter list");
-        getNextToken(); // Consume ')'
+        tok.getNextToken(); // Consume ')'
         auto fun_sig = make_unique<FunctionSignature>(fun_name, fun_type,
                                                       move(fun_params));
         auto fun_body = parse_block();
@@ -718,7 +718,7 @@ unique_ptr<ASTnode> parse_decl()
     }
     char decl_type;
 
-    switch (CurTok.type)
+    switch (tok.CurTok.type)
     {
     case INT_TOK:
         decl_type = INT_TYPE;
@@ -735,8 +735,8 @@ unique_ptr<ASTnode> parse_decl()
         // default:
         // 	throw compiler_error();
     }
-    getNextToken(); // Consume type token
-    auto decl_name = CurTok.lexeme;
+    tok.getNextToken(); // Consume type token
+    auto decl_name = tok.CurTok.lexeme;
 
     if (ActiveScopes.top()->getDecl(decl_name) != nullptr)
     {
@@ -754,25 +754,25 @@ unique_ptr<ASTnode> parse_decl()
                              "' has been used before as function definition");
     }
 
-    getNextToken(); // Consume IDENT
-    if (CurTok.type == SC)
+    tok.getNextToken(); // Consume IDENT
+    if (tok.CurTok.type == SC)
     {
         // Parse variable decl
-        getNextToken(); // Consume ';'
+        tok.getNextToken(); // Consume ';'
         auto var_decl = make_unique<VarDeclNode>(ActiveScopes.top(), decl_name,
                                                  decl_type, true);
         ActiveScopes.top()->setDecl(decl_name, var_decl.get());
         return move(var_decl);
     }
-    else if (CurTok.type == LPAR)
+    else if (tok.CurTok.type == LPAR)
     {
         // Parse function decl
-        getNextToken(); // Consume '('
+        tok.getNextToken(); // Consume '('
         auto params = parse_params();
         assert_tok(
             RPAR,
             "Expected closing right parenthesis ')' after parameter list");
-        getNextToken(); // Consume ')'
+        tok.getNextToken(); // Consume ')'
 
         auto sig =
             make_unique<FunctionSignature>(decl_name, decl_type, move(params));
@@ -792,7 +792,7 @@ unique_ptr<DeclListNode> parse_decl_list()
 {
     auto decl_list = make_unique<DeclListNode>();
 
-    while (CurTok.type != EOF_TOK)
+    while (tok.CurTok.type != EOF_TOK)
     {
         decl_list->addSub(parse_decl());
     }

@@ -8,6 +8,7 @@
 
 #include "FunctionSignature.hpp"
 #include "Token.hpp"
+#include "Tokenizer.hpp"
 
 class VariableScope;
 class FunDeclNode;
@@ -23,5 +24,5 @@ extern unique_ptr<Module> TheModule;
 extern stack<VariableScope *> ActiveScopes;
 extern map<string, FunDeclNode *> DefinedFunctions;
 extern map<string, FunctionSignature *> ExternedFunctions;
-extern TOKEN CurTok;
 extern FILE *pFile;
+extern Tokenizer tok;

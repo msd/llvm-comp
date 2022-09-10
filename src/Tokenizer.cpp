@@ -5,21 +5,20 @@
 #include "my_errors.hpp"
 #include "the_externs.hpp"
 
-string IdentifierStr; // Filled in if IDENT
-int IntVal;           // Filled in if INT_LIT
-bool BoolVal;         // Filled in if BOOL_LIT
-float FloatVal;       // Filled in if FLOAT_LIT
-string StringVal;     // Filled in if String Literal
-int lineNo, columnNo;
+Tokenizer::Tokenizer(/* args */)
+{
+}
 
-deque<TOKEN> tok_buffer;
+Tokenizer::~Tokenizer()
+{
+}
 
-int nextChar()
+int Tokenizer::nextChar()
 {
     return getc(pFile);
 }
 
-TOKEN getNextToken()
+TOKEN Tokenizer::getNextToken()
 {
     if (tok_buffer.size() == 0)
     {
@@ -37,7 +36,7 @@ void assert_tok_any(vector<TOKEN_TYPE> tok_types, string err_msg)
 {
     for (auto tok_type : tok_types)
     {
-        if (CurTok.type == tok_type)
+        if (tok.CurTok.type == tok_type)
         {
             return;
         }
@@ -45,7 +44,7 @@ void assert_tok_any(vector<TOKEN_TYPE> tok_types, string err_msg)
     throw syntax_error(move(err_msg));
 }
 
-TOKEN gettok()
+TOKEN Tokenizer::gettok()
 {
     static int LastChar = ' ';
     static int NextChar = ' ';
@@ -352,18 +351,18 @@ TOKEN gettok()
 
 void assert_tok(TOKEN_TYPE tok_type, string err_msg)
 {
-    if (CurTok.type != tok_type)
+    if (tok.CurTok.type != tok_type)
     {
         throw syntax_error(move(err_msg));
     }
 }
 
-void putBackToken(TOKEN tok)
+void Tokenizer::putBackToken(TOKEN tok)
 {
     tok_buffer.push_front(tok);
 }
 
-TOKEN returnTok(string lexVal, int tok_type)
+TOKEN Tokenizer::returnTok(string lexVal, int tok_type)
 {
     TOKEN return_tok;
 
