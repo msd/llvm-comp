@@ -16,21 +16,34 @@ using std::vector;
 
 class Tokenizer
 {
-    deque<TOKEN> tok_buffer;
+    deque<unique_ptr<TOKEN>> tok_buffer;
 
+    /**
+     * @brief Reads another character from the file, if one exists.
+     *
+     * @return the next character in the file or EOF
+     */
     int nextChar();
 
-    TOKEN returnTok(string lexVal, int tok_type);
+    /**
+     * @brief Construct and return a new token at the current line and column
+     * @param lexVal the lexeme of the new token
+     * @param tok_type the token type of the new token
+     * @return the token with the specified lexeme and type and the current
+     * line and column
+     */
+    unique_ptr<TOKEN> returnTok(string lexVal, int tok_type);
 
     // Read file line by line -- or look for \n and if found add 1 to line
     // number and reset column number to 0
     /// gettok - Return the next token from standard input.
-    TOKEN gettok();
+    unique_ptr<TOKEN> gettok();
 
     unique_ptr<ifstream> file;
 
     template <typename V>
-    TokenWithValue<V> retTokVal(string lexVal, int tok_type, V value);
+    unique_ptr<TokenWithValue<V>> retTokVal(string lexVal, int tok_type,
+                                            V value);
 
   public:
     string IdentifierStr; // Filled in if IDENT
@@ -43,14 +56,14 @@ class Tokenizer
     /// CurTok/next - Provide a simple token buffer.  CurTok is the
     /// current token the parser is looking at.  next reads another
     /// token from the lexer and updates CurTok with its results.
-    TOKEN CurTok;
+    // TOKEN CurTok;
 
     Tokenizer(unique_ptr<ifstream> &&);
     ~Tokenizer();
 
-    TOKEN next();
+    unique_ptr<TOKEN> next();
 
-    void put_back(TOKEN tok);
+    void put_back(unique_ptr<TOKEN> tok);
 };
 
 void assert_tok(TOKEN_TYPE tok_type, string err_msg);

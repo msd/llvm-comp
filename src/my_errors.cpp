@@ -5,25 +5,25 @@
 #include "the_externs.hpp"
 
 semantic_error::semantic_error(string err_msg)
-    : err_msg(move(err_msg)), lineNo(tok->CurTok.lineNo),
-      columnNo(tok->CurTok.columnNo), erroneous_token(tok->CurTok.lexeme)
+    : err_msg(move(err_msg)), lineNo(CurTok->lineNo),
+      columnNo(CurTok->columnNo), erroneous_token(CurTok->lexeme)
 {
 }
 
 syntax_error::syntax_error(string err_msg)
-    : err_msg(move(err_msg)), lineNo(tok->CurTok.lineNo),
-      columnNo(tok->CurTok.columnNo), erroneous_token(tok->CurTok.lexeme)
+    : err_msg(move(err_msg)), lineNo(CurTok->lineNo),
+      columnNo(CurTok->columnNo), erroneous_token(CurTok->lexeme)
 {
 }
 
 compiler_error::compiler_error()
-    : err_msg("Unknown compiler error"), lineNo(tok->CurTok.lineNo),
-      columnNo(tok->CurTok.columnNo), erroneous_token(tok->CurTok.lexeme)
+    : err_msg("Unknown compiler error"), lineNo(CurTok->lineNo),
+      columnNo(CurTok->columnNo), erroneous_token(CurTok->lexeme)
 {
 }
 compiler_error::compiler_error(string err_msg)
-    : err_msg(move(err_msg)), lineNo(tok->CurTok.lineNo),
-      columnNo(tok->CurTok.columnNo), erroneous_token(tok->CurTok.lexeme)
+    : err_msg(move(err_msg)), lineNo(CurTok->lineNo),
+      columnNo(CurTok->columnNo), erroneous_token(CurTok->lexeme)
 {
 }
 

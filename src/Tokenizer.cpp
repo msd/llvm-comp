@@ -4,6 +4,7 @@
 
 using std::stof;
 using std::stoi;
+using std::make_unique;
 
 Tokenizer::Tokenizer(unique_ptr<ifstream> &&file) : file{move(file)}
 {
@@ -18,26 +19,27 @@ int Tokenizer::nextChar()
     return file->get();
 }
 
-TOKEN Tokenizer::next()
+unique_ptr<TOKEN> Tokenizer::next()
 {
+    unique_ptr<TOKEN> temp;
     if (tok_buffer.size())
     {
-        CurTok = tok_buffer.front();
+        temp = move(tok_buffer.front());
         tok_buffer.pop_front();
     }
     else
     {
-        CurTok = gettok();
+        temp = gettok();
     }
 
-    return CurTok;
+    return temp;
 }
 
 void assert_tok_any(vector<TOKEN_TYPE> tok_types, string err_msg)
 {
     for (auto tok_type : tok_types)
     {
-        if (tok->CurTok.type == tok_type)
+        if (CurTok->type == tok_type)
         {
             return;
         }
@@ -45,7 +47,7 @@ void assert_tok_any(vector<TOKEN_TYPE> tok_types, string err_msg)
     throw syntax_error(move(err_msg));
 }
 
-TOKEN Tokenizer::gettok()
+unique_ptr<TOKEN> Tokenizer::gettok()
 {
     static int LastChar = ' ';
     static int NextChar = ' ';
@@ -352,37 +354,37 @@ TOKEN Tokenizer::gettok()
 
 void assert_tok(TOKEN_TYPE tok_type, string err_msg)
 {
-    if (tok->CurTok.type != tok_type)
+    if (CurTok->type != tok_type)
     {
         throw syntax_error(move(err_msg));
     }
 }
 
-void Tokenizer::put_back(TOKEN tok)
+void Tokenizer::put_back(unique_ptr<TOKEN> tok)
 {
-    tok_buffer.push_front(tok);
+    tok_buffer.push_front(move(tok));
 }
 
-TOKEN Tokenizer::returnTok(string lexVal, int tok_type)
+unique_ptr<TOKEN> Tokenizer::returnTok(string lexVal, int tok_type)
 {
-    TOKEN return_tok;
+    auto return_tok = make_unique<TOKEN>();
 
-    return_tok.lexeme = lexVal;
-    return_tok.type = tok_type;
-    return_tok.lineNo = lineNo;
-    return_tok.columnNo = columnNo - lexVal.length() - 1;
+    return_tok->lexeme = lexVal;
+    return_tok->type = tok_type;
+    return_tok->lineNo = lineNo;
+    return_tok->columnNo = columnNo - lexVal.length() - 1;
     return return_tok;
 }
 
 template <typename V>
-TokenWithValue<V> Tokenizer::retTokVal(string lexVal, int tok_type, V value)
+unique_ptr<TokenWithValue<V>> Tokenizer::retTokVal(string lexVal, int tok_type, V value)
 {
-    TokenWithValue<V> return_tok;
+    auto return_tok = make_unique<TokenWithValue<V>>();
 
-    return_tok.lexeme = lexVal;
-    return_tok.type = tok_type;
-    return_tok.lineNo = lineNo;
-    return_tok.columnNo = columnNo - lexVal.length() - 1;
-    return_tok.value = value;
+    return_tok->lexeme = lexVal;
+    return_tok->type = tok_type;
+    return_tok->lineNo = lineNo;
+    return_tok->columnNo = columnNo - lexVal.length() - 1;
+    return_tok->value = value;
     return return_tok;
 }

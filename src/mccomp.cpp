@@ -64,6 +64,7 @@ unique_ptr<Module> TheModule = make_unique<Module>("mini-c", TheContext);
 map<string, FunctionSignature *> ExternedFunctions;
 map<string, FunDeclNode *> DefinedFunctions;
 stack<VariableScope *> ActiveScopes;
+unique_ptr<TOKEN> CurTok;
 
 // Todo whilestmnt paramnode codegen
 
@@ -90,7 +91,7 @@ stack<VariableScope *> ActiveScopes;
 
 static unique_ptr<ASTnode> LogError(string err_txt)
 {
-    cerr << "line " << tok->CurTok.lineNo << " column " << tok->CurTok.columnNo
+    cerr << "line " << CurTok->lineNo << " column " << CurTok->columnNo
          << " error: " << err_txt << '\n';
     return nullptr;
 }
@@ -153,7 +154,7 @@ int main(int argc, char **argv)
     tok->columnNo = 1;
 
     // get the first token
-    tok->next();
+    CurTok = tok->next();
     // while (CurTok.type != EOF_TOK) {
     //    fprintf(stderr, "Token: %s with type %d\n", CurTok.lexeme.c_str(),
     //                CurTok.type);

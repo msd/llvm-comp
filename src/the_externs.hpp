@@ -26,3 +26,4 @@ extern map<string, FunDeclNode *> DefinedFunctions;
 extern map<string, FunctionSignature *> ExternedFunctions;
 extern FILE *pFile;
 extern unique_ptr<Tokenizer> tok;
+extern unique_ptr<TOKEN> CurTok;
