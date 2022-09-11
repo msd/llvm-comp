@@ -9,7 +9,9 @@ class IfStmt : public ASTnode
   public:
     ExprNode *cond;
     BlockNode *then_body;
-    IfStmt(unique_ptr<ASTnode> if_cond, unique_ptr<ASTnode> if_body)
+    IfStmt(Parser *parser, unique_ptr<ASTnode> if_cond,
+           unique_ptr<ASTnode> if_body)
+        : ASTnode(parser)
     {
         addSub(move(if_cond));
         addSub(move(if_body));

@@ -5,7 +5,7 @@
 class NotNode : public RvalNode
 {
   public:
-    NotNode(unique_ptr<ASTnode> sub)
+    NotNode(Parser *parser, unique_ptr<ASTnode> sub) : RvalNode(parser)
     {
         addSub(move(sub));
     }

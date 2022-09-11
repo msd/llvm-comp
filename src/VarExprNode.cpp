@@ -26,7 +26,7 @@ Value *VarExprNode::codegen()
         break;
 
     default:
-        throw compiler_error("ERROR 231");
+        throw compiler_error("ERROR 231", &token);
     }
     return Builder.CreateLoad(T, A);
 }

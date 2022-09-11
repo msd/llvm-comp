@@ -8,7 +8,9 @@
 class FunDeclNode : public DeclNode
 {
   public:
-    FunDeclNode(unique_ptr<ASTnode> sig, unique_ptr<ASTnode> body)
+    FunDeclNode(Parser *parser, unique_ptr<ASTnode> sig,
+                unique_ptr<ASTnode> body)
+        : DeclNode(parser)
     {
         children.push_back(move(sig));
         children.push_back(move(body));

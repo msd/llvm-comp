@@ -5,7 +5,7 @@
 class ParenExprNode : public RvalNode
 {
   public:
-    ParenExprNode(unique_ptr<ASTnode> expr)
+    ParenExprNode(Parser *parser, unique_ptr<ASTnode> expr) : RvalNode(parser)
     {
         children.push_back(move(expr));
     }

@@ -5,7 +5,9 @@
 class OperatorNode : public RvalNode
 {
   public:
-    OperatorNode(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+    OperatorNode(Parser *parser, unique_ptr<ASTnode> lhs,
+                 unique_ptr<ASTnode> rhs)
+        : RvalNode(parser)
     {
         children.push_back(move(lhs));
         children.push_back(move(rhs));

@@ -12,7 +12,8 @@ Value *ReturnValueNode::codegen()
 
     if (return_type->isVoidTy())
     {
-        throw semantic_error("Function declared as void cannot return a value");
+        throw semantic_error("Function declared as void cannot return a value",
+                             &token);
     }
 
     auto return_val = expr->codegen();
@@ -32,7 +33,7 @@ Value *ReturnValueNode::codegen()
     }
     else
     {
-        throw compiler_error("COMPILER ERROR: 651");
+        throw compiler_error("COMPILER ERROR: 651", &token);
     }
 
     return Builder.CreateRet(R);

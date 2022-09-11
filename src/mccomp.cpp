@@ -56,7 +56,6 @@ using std::vector;
 
 LLVMContext TheContext;
 IRBuilder<> Builder(TheContext);
-unique_ptr<Tokenizer> tok;
 
 // Make the module, which holds all the code.
 unique_ptr<Module> TheModule = make_unique<Module>("mini-c", TheContext);
@@ -64,7 +63,6 @@ unique_ptr<Module> TheModule = make_unique<Module>("mini-c", TheContext);
 map<string, FunctionSignature *> ExternedFunctions;
 map<string, FunDeclNode *> DefinedFunctions;
 stack<VariableScope *> ActiveScopes;
-unique_ptr<TOKEN> CurTok;
 
 // Todo whilestmnt paramnode codegen
 
@@ -88,13 +86,6 @@ unique_ptr<TOKEN> CurTok;
 //===----------------------------------------------------------------------===//
 // Recursive Descent Parser - Function call for each production
 //===----------------------------------------------------------------------===//
-
-static unique_ptr<ASTnode> LogError(string err_txt)
-{
-    cerr << "line " << CurTok->lineNo << " column " << CurTok->columnNo
-         << " error: " << err_txt << '\n';
-    return nullptr;
-}
 
 //===----------------------------------------------------------------------===//
 // AST Printer
@@ -147,25 +138,14 @@ int main(int argc, char **argv)
 
     string file_path = argv[1];
     auto source_file = make_unique<ifstream>(file_path);
-    tok = make_unique<Tokenizer>(move(source_file));
+    Tokenizer tok{move(source_file)};
 
-    // initialize line number and column numbers to zero
-    tok->lineNo = 1;
-    tok->columnNo = 1;
-
-    // get the first token
-    CurTok = tok->next();
-    // while (CurTok.type != EOF_TOK) {
-    //    fprintf(stderr, "Token: %s with type %d\n", CurTok.lexeme.c_str(),
-    //                CurTok.type);
-    //    next();
-    // }
-    cerr << "Lexer Finished\n";
+    Parser parser{&tok};
 
     // Run the parser now.
     try
     {
-        unique_ptr<ProgramNode> program = parser();
+        unique_ptr<ProgramNode> program = parser.parse_program();
         cerr << "Parsing Finished\n";
         print_ast(program.get());
         program->codegen();
@@ -173,19 +153,19 @@ int main(int argc, char **argv)
     catch (syntax_error &e)
     {
         cerr << "Parsing ERROR on line " << e.lineNo << " column "
-             << tok->columnNo << " received token " << e.erroneous_token << endl
+             << tok.columnNo << " received token " << e.erroneous_token << endl
              << e.what() << '\n';
     }
     catch (semantic_error &e)
     {
         cerr << "Semantic ERROR on line " << e.lineNo << " column "
-             << tok->columnNo << " received token " << e.erroneous_token << endl
+             << tok.columnNo << " received token " << e.erroneous_token << endl
              << e.what() << '\n';
     }
     catch (compiler_error &e)
     {
         cerr << "Compiler ERROR on line " << e.lineNo << " column "
-             << tok->columnNo << " received token " << e.erroneous_token << endl
+             << tok.columnNo << " received token " << e.erroneous_token << endl
              << e.what() << '\n';
     }
 

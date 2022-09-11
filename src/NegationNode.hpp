@@ -6,7 +6,7 @@
 class NegationNode : public RvalNode
 {
   public:
-    NegationNode(unique_ptr<ASTnode> rval)
+    NegationNode(Parser *parser, unique_ptr<ASTnode> rval)  : RvalNode(parser)
     {
         addSub(move(rval));
     }

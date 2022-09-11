@@ -5,6 +5,9 @@
 class ExternListNode : public ASTnode
 {
   public:
+    ExternListNode(Parser *parser) : ASTnode(parser)
+    {
+    }
     virtual const string node_type() const
     {
         return "EXTERN LIST";

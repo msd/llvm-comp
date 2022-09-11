@@ -9,8 +9,9 @@ class IfWithElseNode : public ASTnode
   public:
     ExprNode *cond;
     BlockNode *then_body, *else_body;
-    IfWithElseNode(unique_ptr<ASTnode> if_cond, unique_ptr<ASTnode> then_body,
-                   unique_ptr<ASTnode> else_body)
+    IfWithElseNode(Parser *parser, unique_ptr<ASTnode> if_cond,
+                   unique_ptr<ASTnode> then_body, unique_ptr<ASTnode> else_body)
+        : ASTnode(parser)
     {
         addSub(move(if_cond));
         addSub(move(then_body));

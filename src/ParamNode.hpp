@@ -8,7 +8,8 @@ class ParamNode : public ASTnode
   public:
     const string name;
     const char type;
-    ParamNode(string name, const char type) : name(name), type(type)
+    ParamNode(Parser *parser, string name, const char type)
+        : ASTnode(parser), name(name), type(type)
     {
     }
     virtual const string node_type() const

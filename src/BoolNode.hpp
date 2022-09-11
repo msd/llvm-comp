@@ -8,7 +8,7 @@ class BoolNode : public LitNode<bool>
   public:
     bool get_bool()
     {
-        return *static_cast<bool *>(data);
+        return data;
     }
 
     virtual const string node_type() const
@@ -18,7 +18,7 @@ class BoolNode : public LitNode<bool>
 
     virtual Value *codegen();
 
-    BoolNode(bool litVal) : LitNode<bool>(litVal)
+    BoolNode(Parser *parser, bool litVal) : LitNode(parser, litVal)
     {
     }
     virtual char expr_type()
@@ -29,6 +29,10 @@ class BoolNode : public LitNode<bool>
     int as_int()
     {
         return get_bool() ? 1 : 0;
+    }
+
+    virtual ~BoolNode()
+    {
     }
 
     float as_float()

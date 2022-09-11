@@ -8,7 +8,9 @@ class ProgramNode : public ASTnode
   public:
     ExternListNode *extern_list;
     DeclListNode *decl_list;
-    ProgramNode(unique_ptr<ExternListNode> eln, unique_ptr<DeclListNode> dln)
+    ProgramNode(Parser *parser, unique_ptr<ExternListNode> eln,
+                unique_ptr<DeclListNode> dln)
+        : ASTnode(parser)
     {
         children.push_back(move(eln));
         children.push_back(move(dln));

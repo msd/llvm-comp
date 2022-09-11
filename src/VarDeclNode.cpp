@@ -14,8 +14,9 @@ Value *VarDeclNode::codegen()
         if (TheModule->getGlobalVariable(var_name))
         {
             throw semantic_error(string() +
-                                 "Tried to declare global variable " +
-                                 var_name + " twice");
+                                     "Tried to declare global variable " +
+                                     var_name + " twice",
+                                 &token);
         }
         Constant *V;
         Type *T;
@@ -37,8 +38,8 @@ Value *VarDeclNode::codegen()
             break;
 
         default:
-            throw compiler_error(string() + "Unknown variable type " +
-                                 var_type);
+            throw compiler_error(string() + "Unknown variable type " + var_type,
+                                 &token);
         }
         auto Address = new GlobalVariable(
             *TheModule, T, false, GlobalValue::ExternalLinkage, V, var_name);
@@ -63,7 +64,8 @@ Value *VarDeclNode::codegen()
             break;
 
         default:
-            throw compiler_error("Invalid type for variable " + var_name);
+            throw compiler_error("Invalid type for variable " + var_name,
+                                 &token);
         }
         auto Address = CreateEntryBlockAlloca(T, var_name);
         scope->setAddr(var_name, Address);

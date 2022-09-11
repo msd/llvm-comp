@@ -5,8 +5,8 @@
 class OpADD : public OperatorNode
 {
   public:
-    OpADD(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
-        : OperatorNode(move(lhs), move(rhs))
+    OpADD(Parser *parser, unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+        : OperatorNode(parser, move(lhs), move(rhs))
     {
     }
     virtual const string node_type() const
@@ -22,8 +22,8 @@ class OpADD : public OperatorNode
 class OpMULT : public OperatorNode
 {
   public:
-    OpMULT(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
-        : OperatorNode(move(lhs), move(rhs))
+    OpMULT(Parser *parser, unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+        : OperatorNode(parser, move(lhs), move(rhs))
     {
     }
     virtual const string node_type() const
@@ -39,8 +39,8 @@ class OpMULT : public OperatorNode
 class OpDIV : public OperatorNode
 {
   public:
-    OpDIV(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
-        : OperatorNode(move(lhs), move(rhs))
+    OpDIV(Parser *parser, unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+        : OperatorNode(parser, move(lhs), move(rhs))
     {
     }
     virtual const string node_type() const
@@ -56,8 +56,8 @@ class OpDIV : public OperatorNode
 class OpMODULO : public OperatorNode
 {
   public:
-    OpMODULO(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
-        : OperatorNode(move(lhs), move(rhs))
+    OpMODULO(Parser *parser, unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+        : OperatorNode(parser, move(lhs), move(rhs))
     {
     }
     virtual const string node_type() const
@@ -73,8 +73,8 @@ class OpMODULO : public OperatorNode
 class OpSUB : public OperatorNode
 {
   public:
-    OpSUB(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
-        : OperatorNode(move(lhs), move(rhs))
+    OpSUB(Parser *parser, unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+        : OperatorNode(parser, move(lhs), move(rhs))
     {
     }
     virtual const string node_type() const
@@ -90,8 +90,9 @@ class OpSUB : public OperatorNode
 class EqualityNode : public OperatorNode
 {
   public:
-    EqualityNode(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
-        : OperatorNode(move(lhs), move(rhs))
+    EqualityNode(Parser *parser, unique_ptr<ASTnode> lhs,
+                 unique_ptr<ASTnode> rhs)
+        : OperatorNode(parser, move(lhs), move(rhs))
     {
     }
     virtual const string node_type() const = 0;
@@ -102,8 +103,9 @@ class EqualityNode : public OperatorNode
 class InequalityNode : public OperatorNode
 {
   public:
-    InequalityNode(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
-        : OperatorNode(move(lhs), move(rhs))
+    InequalityNode(Parser *parser, unique_ptr<ASTnode> lhs,
+                   unique_ptr<ASTnode> rhs)
+        : OperatorNode(parser, move(lhs), move(rhs))
     {
     }
     virtual const string node_type() const = 0;
@@ -114,8 +116,8 @@ class InequalityNode : public OperatorNode
 class OpEQ : public EqualityNode
 {
   public:
-    OpEQ(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
-        : EqualityNode(move(lhs), move(rhs))
+    OpEQ(Parser *parser, unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+        : EqualityNode(parser, move(lhs), move(rhs))
     {
     }
     virtual const string node_type() const
@@ -129,8 +131,8 @@ class OpEQ : public EqualityNode
 class OpNE : public EqualityNode
 {
   public:
-    OpNE(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
-        : EqualityNode(move(lhs), move(rhs))
+    OpNE(Parser *parser, unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+        : EqualityNode(parser, move(lhs), move(rhs))
     {
     }
     virtual const string node_type() const
@@ -144,8 +146,8 @@ class OpNE : public EqualityNode
 class OpLE : public InequalityNode
 {
   public:
-    OpLE(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
-        : InequalityNode(move(lhs), move(rhs))
+    OpLE(Parser *parser, unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+        : InequalityNode(parser, move(lhs), move(rhs))
     {
     }
     virtual const string node_type() const
@@ -159,8 +161,8 @@ class OpLE : public InequalityNode
 class OpLT : public InequalityNode
 {
   public:
-    OpLT(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
-        : InequalityNode(move(lhs), move(rhs))
+    OpLT(Parser *parser, unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+        : InequalityNode(parser, move(lhs), move(rhs))
     {
     }
     virtual const string node_type() const
@@ -174,8 +176,8 @@ class OpLT : public InequalityNode
 class OpGE : public InequalityNode
 {
   public:
-    OpGE(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
-        : InequalityNode(move(lhs), move(rhs))
+    OpGE(Parser *parser, unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+        : InequalityNode(parser, move(lhs), move(rhs))
     {
     }
     virtual const string node_type() const
@@ -189,8 +191,8 @@ class OpGE : public InequalityNode
 class OpGT : public InequalityNode
 {
   public:
-    OpGT(unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
-        : InequalityNode(move(lhs), move(rhs))
+    OpGT(Parser *parser, unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+        : InequalityNode(parser, move(lhs), move(rhs))
     {
     }
     virtual const string node_type() const

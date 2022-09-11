@@ -11,7 +11,7 @@ Value *DeclListNode::codegen()
         v = children[i]->codegen();
         if (!v)
         {
-            throw compiler_error("decl statement could not be created");
+            throw compiler_error("decl statement could not be created", &token);
         }
     }
     return v;

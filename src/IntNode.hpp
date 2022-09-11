@@ -3,11 +3,13 @@
 #include "LitNode.hpp"
 #include "ValidTypes.hpp"
 
+class Parser;
+
 /// IntASTnode - Class for integer literals like 1, 2, 10,
 class IntNode : public LitNode<int>
 {
   public:
-    IntNode(int litVal) : LitNode<int>(litVal)
+    IntNode(Parser *parser, int litVal) : LitNode<int>(parser, litVal)
     {
     }
     virtual const string node_type() const
@@ -17,10 +19,14 @@ class IntNode : public LitNode<int>
 
     int get_int()
     {
-        return *static_cast<int *>(data);
+        return data;
     }
 
     virtual Value *codegen();
+
+    virtual ~IntNode()
+    {
+    }
 
     virtual char expr_type()
     {

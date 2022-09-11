@@ -5,7 +5,9 @@
 class WhileStmt : public ASTnode
 {
   public:
-    WhileStmt(unique_ptr<ExprNode> condition, unique_ptr<ASTnode> loop_body)
+    WhileStmt(Parser *parser, unique_ptr<ExprNode> condition,
+              unique_ptr<ASTnode> loop_body)
+        : ASTnode(parser)
     {
         children.push_back(move(condition));
         children.push_back(move(loop_body));

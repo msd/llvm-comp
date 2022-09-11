@@ -11,8 +11,9 @@ class VarExprNode : public RvalNode
     const string name;
     const VarDeclNode *decl;
     VariableScope *scope;
-    VarExprNode(VariableScope *scope, string name, VarDeclNode *decl)
-        : name(name), decl(decl), scope(scope)
+    VarExprNode(Parser *parser, VariableScope *scope, string name,
+                VarDeclNode *decl)
+        : RvalNode(parser), name(name), decl(decl), scope(scope)
     {
     }
     virtual const string node_type() const

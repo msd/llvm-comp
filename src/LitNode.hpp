@@ -2,19 +2,20 @@
 
 #include "RvalNode.hpp"
 
+class Parser;
+
 template <typename T> class LitNode : public RvalNode
 {
   public:
-    T *data;
-    LitNode(T litVal)
+    T data;
+    LitNode(Parser *parser, T litVal) : RvalNode(parser)
     {
-        data = new T;
-        *data = litVal;
+        data = litVal;
     }
 
     virtual string data_str() const
     {
-        return std::to_string(*data);
+        return std::to_string(data);
     }
 
     virtual string to_string() const
@@ -22,9 +23,8 @@ template <typename T> class LitNode : public RvalNode
         return node_type() + "=" + data_str();
     }
 
-    ~LitNode()
+    virtual ~LitNode()
     {
-        delete data;
     }
 
     virtual char expr_type() = 0;

@@ -2,7 +2,7 @@
 
 #include "the_externs.hpp"
 
-BlockNode::BlockNode()
+BlockNode::BlockNode(Parser *parser) : ASTnode(parser)
 {
     _scope = VariableScope::inherit_vars(ActiveScopes.top());
     scope = _scope.get();

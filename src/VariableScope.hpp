@@ -25,6 +25,7 @@ class VariableScope
     }
     static auto inherit_vars(VariableScope *outer_scope)
     {
+        // TODO use make_unique
         auto new_scope = new VariableScope(outer_scope);
 
         return unique_ptr<VariableScope>{new_scope};

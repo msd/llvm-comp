@@ -21,6 +21,6 @@ char FunCallNode::expr_type()
     {
         return DefinedFunctions[fun_name]->sig()->return_type;
     }
-    throw semantic_error("Calling function " + fun_name +
-                         " which hasn't been defined");
+    throw semantic_error(
+        "Calling function " + fun_name + " which hasn't been defined", &token);
 }

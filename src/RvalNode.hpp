@@ -5,6 +5,9 @@
 class RvalNode : public ExprNode
 {
   public:
+    RvalNode(Parser *parser) : ExprNode(parser)
+    {
+    }
     virtual ~RvalNode()
     {
     }

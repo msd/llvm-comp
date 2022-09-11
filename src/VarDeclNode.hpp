@@ -13,10 +13,10 @@ class VarDeclNode : public DeclNode
     const string var_name;
     const char var_type;
     const bool is_global;
-    VarDeclNode(VariableScope *scope, string var_name, const char var_type,
-                bool is_global)
-        : scope(scope), var_name(var_name), var_type(var_type),
-          is_global(is_global)
+    VarDeclNode(Parser *parser, VariableScope *scope, string var_name,
+                const char var_type, bool is_global)
+        : DeclNode(parser), scope(scope), var_name(var_name),
+          var_type(var_type), is_global(is_global)
     {
     }
 

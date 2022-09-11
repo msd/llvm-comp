@@ -20,8 +20,8 @@ Function *FunDeclNode::codegen()
 
     if (!the_function->empty())
     {
-        throw semantic_error("Function " + sig()->name +
-                             " cannot be  redefined");
+        throw semantic_error(
+            "Function " + sig()->name + " cannot be  redefined", &token);
     }
 
     auto BB = BasicBlock::Create(TheContext, "entry", the_function);

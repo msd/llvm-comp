@@ -5,6 +5,9 @@
 class ParamsNode : public ASTnode
 {
   public:
+    ParamsNode(Parser *parser) : ASTnode(parser)
+    {
+    }
     ParamNode *get(int i)
     {
         return dynamic_cast<ParamNode *>(children[i].get());

@@ -6,16 +6,22 @@
 
 #include "llvm/IR/IRBuilder.h"
 
+#include "Token.hpp"
+
 using namespace llvm;
 
 using std::string;
 using std::unique_ptr;
 using std::vector;
 
+class Parser;
+
 /// ASTnode - Base class for all AST nodes.
 class ASTnode
 {
   public:
+    TOKEN token;
+    ASTnode(Parser *parser);
     vector<unique_ptr<ASTnode>> children{};
     virtual Value *codegen() = 0;
     virtual const string node_type() const = 0;
@@ -29,6 +35,7 @@ class ASTnode
     virtual ~ASTnode()
     {
     }
+
     virtual void addSub(unique_ptr<ASTnode> subExpr)
     {
         children.push_back(move(subExpr));

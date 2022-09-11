@@ -3,9 +3,9 @@
 #include "ValidTypes.hpp"
 #include "the_externs.hpp"
 
-FunctionSignature::FunctionSignature(string name, const char return_type,
+FunctionSignature::FunctionSignature(Parser *parser, string name, const char return_type,
                                      unique_ptr<ASTnode> params)
-    : name(name), return_type(return_type)
+    : ASTnode(parser), name(name), return_type(return_type)
 {
     children.push_back(move(params));
 }

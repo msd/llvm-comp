@@ -6,7 +6,8 @@ class FunCallNode : public RvalNode
 {
   public:
     const string fun_name;
-    FunCallNode(string fun_name) : fun_name(fun_name)
+    FunCallNode(Parser *parser, string fun_name)
+        : RvalNode(parser), fun_name(fun_name)
     {
     }
     virtual const string node_type() const

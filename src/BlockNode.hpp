@@ -26,6 +26,6 @@ class BlockNode : public ASTnode
         return "BLOCK";
     }
 
-    BlockNode();
+    BlockNode(Parser *parser);
     virtual Value *codegen();
 };

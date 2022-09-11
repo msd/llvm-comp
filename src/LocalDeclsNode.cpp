@@ -13,8 +13,8 @@ Value *LocalDeclsNode::codegen()
             v = children[i]->codegen();
             if (!v)
             {
-                throw compiler_error(
-                    "failed to allocate create local variable");
+                throw compiler_error("failed to allocate create local variable",
+                                     &token);
             }
         }
         return v;

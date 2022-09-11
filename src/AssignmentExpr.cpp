@@ -15,7 +15,8 @@ Value *AssignmentExpr::codegen()
     if (!scope->hasName(var_to_name))
     {
         throw semantic_error(string() + "Variable '" + var_to_name +
-                             "' is being assigned but never declared.");
+                                 "' is being assigned but never declared.",
+                             &this->token);
     }
 
     switch (scope->getDecl(var_to_name)->var_type)
@@ -38,15 +39,15 @@ Value *AssignmentExpr::codegen()
     return Builder.CreateStore(CastedValue, Address);
 }
 
-AssignmentExpr::AssignmentExpr(VariableScope *scope, unique_ptr<ASTnode> lhs,
-                               unique_ptr<ASTnode> rhs)
-    : scope(scope)
+AssignmentExpr::AssignmentExpr(Parser *parser, VariableScope *scope,
+                               unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+    : ExprNode(parser), scope(scope)
 {
     children.push_back(move(lhs));
     children.push_back(move(rhs));
     if (this->rhs()->expr_type() == VOID_TYPE)
     {
-        throw semantic_error(
-            " void value not ignored as it ought to be"); // Same error as gcc
+        throw semantic_error(" void value not ignored as it ought to be",
+                             &token); // Same error as gcc
     }
 }

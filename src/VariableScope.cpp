@@ -37,7 +37,8 @@ void VariableScope::setDecl(string var_name, VarDeclNode *decl)
     if (hasLocalName(var_name))
     {
         throw semantic_error(string() + "attempted to define " + var_name +
-                             " but has been already defined in this scope");
+                                 " but has been already defined in this scope",
+                             &decl->token);
     }
     local_decls[var_name] = decl;
 }

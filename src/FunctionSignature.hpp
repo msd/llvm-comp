@@ -7,7 +7,7 @@ class FunctionSignature : public ASTnode
   public:
     string name;
     const char return_type;
-    FunctionSignature(string name, const char return_type,
+    FunctionSignature(Parser *parser, string name, const char return_type,
                       unique_ptr<ASTnode> params);
     ParamsNode *params()
     {

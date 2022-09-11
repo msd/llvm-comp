@@ -6,7 +6,7 @@ class ReturnValueNode : public ASTnode
 {
   public:
     ExprNode *expr;
-    ReturnValueNode(unique_ptr<ASTnode> expr)
+    ReturnValueNode(Parser *parser, unique_ptr<ASTnode> expr) : ASTnode(parser)
     {
         children.push_back(move(expr));
 

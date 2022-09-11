@@ -29,7 +29,7 @@ class AssignmentExpr : public ExprNode
         return rhs()->expr_type();
     }
 
-    AssignmentExpr(VariableScope *scope, unique_ptr<ASTnode> lhs,
-                   unique_ptr<ASTnode> rhs);
+    AssignmentExpr(Parser *parser, VariableScope *scope,
+                   unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs);
     virtual Value *codegen();
 };

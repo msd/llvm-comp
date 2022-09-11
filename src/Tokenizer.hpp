@@ -65,7 +65,3 @@ class Tokenizer
 
     void put_back(unique_ptr<TOKEN> tok);
 };
-
-void assert_tok(TOKEN_TYPE tok_type, string err_msg);
-
-void assert_tok_any(vector<TOKEN_TYPE> tok_types, string err_msg);

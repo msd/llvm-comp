@@ -2,11 +2,12 @@
 
 #include "the_externs.hpp"
 
+using std::make_unique;
 using std::stof;
 using std::stoi;
-using std::make_unique;
 
-Tokenizer::Tokenizer(unique_ptr<ifstream> &&file) : file{move(file)}
+Tokenizer::Tokenizer(unique_ptr<ifstream> &&file)
+    : file{move(file)}, lineNo(1), columnNo(1)
 {
 }
 
@@ -33,18 +34,6 @@ unique_ptr<TOKEN> Tokenizer::next()
     }
 
     return temp;
-}
-
-void assert_tok_any(vector<TOKEN_TYPE> tok_types, string err_msg)
-{
-    for (auto tok_type : tok_types)
-    {
-        if (CurTok->type == tok_type)
-        {
-            return;
-        }
-    }
-    throw syntax_error(move(err_msg));
 }
 
 unique_ptr<TOKEN> Tokenizer::gettok()
@@ -352,14 +341,6 @@ unique_ptr<TOKEN> Tokenizer::gettok()
     return returnTok(s, int(ThisChar));
 }
 
-void assert_tok(TOKEN_TYPE tok_type, string err_msg)
-{
-    if (CurTok->type != tok_type)
-    {
-        throw syntax_error(move(err_msg));
-    }
-}
-
 void Tokenizer::put_back(unique_ptr<TOKEN> tok)
 {
     tok_buffer.push_front(move(tok));
@@ -377,7 +358,8 @@ unique_ptr<TOKEN> Tokenizer::returnTok(string lexVal, int tok_type)
 }
 
 template <typename V>
-unique_ptr<TokenWithValue<V>> Tokenizer::retTokVal(string lexVal, int tok_type, V value)
+unique_ptr<TokenWithValue<V>> Tokenizer::retTokVal(string lexVal, int tok_type,
+                                                   V value)
 {
     auto return_tok = make_unique<TokenWithValue<V>>();
 
