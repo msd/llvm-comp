@@ -117,12 +117,12 @@ TOKEN Tokenizer::gettok()
         if (IdentifierStr == "true")
         {
             BoolVal = true;
-            return returnTok("true", BOOL_LIT);
+            return retTokVal("true", BOOL_LIT, BoolVal);
         }
         if (IdentifierStr == "false")
         {
             BoolVal = false;
-            return returnTok("false", BOOL_LIT);
+            return retTokVal("false", BOOL_LIT, BoolVal);
         }
         return returnTok(IdentifierStr.c_str(), IDENT);
     }
@@ -195,7 +195,7 @@ TOKEN Tokenizer::gettok()
             } while (isdigit(LastChar));
 
             FloatVal = stof(NumStr, nullptr);
-            return returnTok(NumStr, FLOAT_LIT);
+            return retTokVal(NumStr, FLOAT_LIT, FloatVal);
         }
         else
         {
@@ -216,12 +216,12 @@ TOKEN Tokenizer::gettok()
                 } while (isdigit(LastChar));
 
                 FloatVal = stof(NumStr, nullptr);
-                return returnTok(NumStr, FLOAT_LIT);
+                return retTokVal(NumStr, FLOAT_LIT, FloatVal);
             }
             else // Integer : [0-9]+
             {
                 IntVal = stoi(NumStr, nullptr);
-                return returnTok(NumStr, INT_LIT);
+                return retTokVal(NumStr, INT_LIT, IntVal);
             }
         }
     }
