@@ -4,6 +4,9 @@
 
 class FunctionSignature : public ASTnode
 {
+    vector<Type *> param_types();
+    Type *return_type_llvm();
+
   public:
     string name;
     const char return_type;

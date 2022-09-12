@@ -25,10 +25,7 @@ class VariableScope
     }
     static auto inherit_vars(VariableScope *outer_scope)
     {
-        // TODO use make_unique
-        auto new_scope = new VariableScope(outer_scope);
-
-        return unique_ptr<VariableScope>{new_scope};
+        return unique_ptr<VariableScope>{new VariableScope(outer_scope)};
     }
 
     auto hasLocalName(string var_name)

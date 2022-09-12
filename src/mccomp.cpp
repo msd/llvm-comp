@@ -64,13 +64,6 @@ map<string, FunctionSignature *> ExternedFunctions;
 map<string, FunDeclNode *> DefinedFunctions;
 stack<VariableScope *> ActiveScopes;
 
-// Todo whilestmnt paramnode codegen
-
-// todo handle empty function body when codegening
-
-// todo type checking conforming i.e. integers + floating point -> float + float
-// (coercion)s|
-
 //===----------------------------------------------------------------------===//
 // Lexer
 //===----------------------------------------------------------------------===//

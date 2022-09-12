@@ -32,7 +32,6 @@ class Parser
     unique_ptr<NotNode> parse_not_term();
     unique_ptr<ExprNode> parse_rval_term();
     unique_ptr<ExprNode> parse_rval_multiplication();
-    // todo refactor to make more sense (parses also subtraction)
     unique_ptr<ExprNode> parse_rval_addition();
     unique_ptr<ExprNode> parse_rval_inequality();
     unique_ptr<ExprNode> parse_rval_equality();
