@@ -142,6 +142,10 @@ int main(int argc, char **argv)
              << tok.columnNo << " received token " << e.erroneous_token << endl
              << e.what() << '\n';
     }
+    catch (exception &e)
+    {
+        cerr << "unknown error: " << e.what() << endl;
+    }
 
     //********************* Start printing final IR **************************
     // Print out all of the generated code into a file called output.ll
