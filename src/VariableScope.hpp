@@ -19,6 +19,11 @@ class VariableScope
     {
     }
 
+    auto hasLocalName(string var_name)
+    {
+        return static_cast<bool>(local_decls.count(var_name));
+    }
+
   public:
     VariableScope() : inherited(nullptr)
     {
@@ -26,11 +31,6 @@ class VariableScope
     static auto inherit_vars(VariableScope *outer_scope)
     {
         return unique_ptr<VariableScope>{new VariableScope(outer_scope)};
-    }
-
-    auto hasLocalName(string var_name)
-    {
-        return static_cast<bool>(local_decls.count(var_name));
     }
 
     bool hasName(string var_name)

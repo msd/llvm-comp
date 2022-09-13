@@ -14,9 +14,10 @@ Value *AssignmentExpr::codegen()
 
     if (!scope->hasName(var_to_name))
     {
-        throw semantic_error(string() + "Variable '" + var_to_name +
+        using namespace std::string_literals;
+        throw semantic_error("Variable '"s + var_to_name +
                                  "' is being assigned but never declared.",
-                             &this->token);
+                             &token);
     }
 
     switch (scope->getDecl(var_to_name)->var_type)

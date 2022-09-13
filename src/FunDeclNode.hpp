@@ -8,8 +8,8 @@
 class FunDeclNode : public DeclNode
 {
   public:
-    FunDeclNode(Parser *parser, unique_ptr<ASTnode> sig,
-                unique_ptr<ASTnode> body)
+    FunDeclNode(Parser *parser, unique_ptr<FunctionSignature> sig,
+                unique_ptr<BlockNode> body)
         : DeclNode(parser)
     {
         children.push_back(move(sig));

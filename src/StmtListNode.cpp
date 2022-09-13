@@ -13,7 +13,7 @@ Value *StmtListNode::codegen()
             v = children[i]->codegen();
             if (!v)
             {
-                return nullptr;
+                throw compiler_error("failed to codegen in statement list");
             }
         }
         return v;

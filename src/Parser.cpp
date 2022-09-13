@@ -506,7 +506,7 @@ unique_ptr<ExternListNode> Parser::parse_extern_list()
     return extern_list;
 }
 
-unique_ptr<ASTnode> Parser::parse_local_decls()
+unique_ptr<LocalDeclsNode> Parser::parse_local_decls()
 {
     auto local_decls = make_unique<LocalDeclsNode>(this);
     bool loop = true;
@@ -568,22 +568,24 @@ unique_ptr<ASTnode> Parser::parse_expr_stmt()
     return expr_stmt;
 }
 
-unique_ptr<ASTnode> Parser::parse_block()
+unique_ptr<BlockNode> Parser::parse_block()
 {
-    auto new_block = make_unique<BlockNode>(this);
+    auto new_scope = VariableScope::inherit_vars(ActiveScopes.top());
 
-    ActiveScopes.push(new_block->scope);
+    ActiveScopes.push(new_scope.get());
 
     assert_tok(LBRA, "Expected opening left brace '{' at the start of block");
     CurTok = tok->next(); // Consume "{"
     auto decls = parse_local_decls();
     auto stmts = parse_stmt_list();
-
     assert_tok(RBRA, "Expected closing right brace '}' at the start of block");
     CurTok = tok->next(); // Consume "}"
-    new_block->addSub(move(stmts));
-    new_block->addSub(move(decls));
+
     ActiveScopes.pop();
+
+    auto new_block =
+        make_unique<BlockNode>(this, move(new_scope), move(decls), move(stmts));
+
     return new_block;
 }
 
@@ -672,7 +674,7 @@ unique_ptr<ASTnode> Parser::parse_stmt()
     }
 }
 
-unique_ptr<ASTnode> Parser::parse_stmt_list()
+unique_ptr<StmtListNode> Parser::parse_stmt_list()
 {
     auto stmt_list = make_unique<StmtListNode>(this);
 

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "ASTnode.hpp"
+#include "LocalDeclsNode.hpp"
+#include "StmtListNode.hpp"
 #include "VariableScope.hpp"
 
 class BlockNode : public ASTnode
@@ -9,16 +10,16 @@ class BlockNode : public ASTnode
     unique_ptr<VariableScope> _scope;
 
   public:
-    VariableScope *scope;
+    VariableScope *scope();
 
-    ASTnode *local_decls()
+    LocalDeclsNode *local_decls()
     {
-        return children[0].get();
+        return dynamic_cast<LocalDeclsNode *>(children[0].get());
     }
 
-    ASTnode *stmt_list()
+    StmtListNode *stmt_list()
     {
-        return children[1].get();
+        return dynamic_cast<StmtListNode *>(children[1].get());
     }
 
     virtual const string node_type() const
@@ -26,6 +27,7 @@ class BlockNode : public ASTnode
         return "BLOCK";
     }
 
-    BlockNode(Parser *parser);
+    BlockNode(Parser *parser, unique_ptr<VariableScope> scope,
+              unique_ptr<LocalDeclsNode> decls, unique_ptr<StmtListNode> stmts);
     virtual Value *codegen();
 };

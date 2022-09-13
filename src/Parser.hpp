@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include "BlockNode.hpp"
 #include "BoolNode.hpp"
 #include "FloatNode.hpp"
 #include "IntNode.hpp"
@@ -41,14 +42,14 @@ class Parser
     unique_ptr<ASTnode> parse_params();
     unique_ptr<ASTnode> parse_extern();
     unique_ptr<ExternListNode> parse_extern_list();
-    unique_ptr<ASTnode> parse_local_decls();
+    unique_ptr<LocalDeclsNode> parse_local_decls();
     unique_ptr<ASTnode> parse_expr_stmt();
-    unique_ptr<ASTnode> parse_block();
+    unique_ptr<BlockNode> parse_block();
     unique_ptr<ASTnode> parse_if_stmt();
     unique_ptr<ASTnode> parse_while_stmt();
     unique_ptr<ASTnode> parse_return_stmt();
     unique_ptr<ASTnode> parse_stmt();
-    unique_ptr<ASTnode> parse_stmt_list();
+    unique_ptr<StmtListNode> parse_stmt_list();
     // Parses global variable declarations and function definitions
     unique_ptr<ASTnode> parse_decl();
     unique_ptr<DeclListNode> parse_decl_list();
