@@ -11,7 +11,7 @@
 #include "ExternListNode.hpp"
 #include "FloatNode.hpp"
 #include "FunCallNode.hpp"
-#include "FunDeclNode.hpp"
+#include "FunDefNode.hpp"
 #include "FunctionSignature.hpp"
 #include "IfStmt.hpp"
 #include "IfWithElseNode.hpp"
@@ -729,7 +729,7 @@ unique_ptr<ASTnode> Parser::parse_decl()
                                                       move(fun_params));
         auto fun_body = parse_block();
         auto fun_def =
-            make_unique<FunDeclNode>(this, move(fun_sig), move(fun_body));
+            make_unique<FunDefNode>(this, move(fun_sig), move(fun_body));
         DefinedFunctions[fun_name] = fun_def.get();
         return fun_def;
     }
@@ -801,7 +801,7 @@ unique_ptr<ASTnode> Parser::parse_decl()
         auto sig = make_unique<FunctionSignature>(this, decl_name, decl_type,
                                                   move(params));
         auto body = parse_block();
-        auto fun_def = make_unique<FunDeclNode>(this, move(sig), move(body));
+        auto fun_def = make_unique<FunDefNode>(this, move(sig), move(body));
         DefinedFunctions[decl_name] = fun_def.get();
         return fun_def;
     }

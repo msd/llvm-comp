@@ -11,7 +11,7 @@
 #include "Tokenizer.hpp"
 
 class VariableScope;
-class FunDeclNode;
+class FunDefNode;
 
 using std::map;
 using std::stack;
@@ -22,5 +22,5 @@ extern LLVMContext TheContext;
 extern IRBuilder<> Builder;
 extern unique_ptr<Module> TheModule;
 extern stack<VariableScope *> ActiveScopes;
-extern map<string, FunDeclNode *> DefinedFunctions;
+extern map<string, FunDefNode *> DefinedFunctions;
 extern map<string, FunctionSignature *> ExternedFunctions;

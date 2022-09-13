@@ -5,11 +5,11 @@
 #include "FunctionSignature.hpp"
 #include "my_errors.hpp"
 
-class FunDeclNode : public DeclNode
+class FunDefNode : public DeclNode
 {
   public:
-    FunDeclNode(Parser *parser, unique_ptr<FunctionSignature> sig,
-                unique_ptr<BlockNode> body)
+    FunDefNode(Parser *parser, unique_ptr<FunctionSignature> sig,
+               unique_ptr<BlockNode> body)
         : DeclNode(parser)
     {
         children.push_back(move(sig));

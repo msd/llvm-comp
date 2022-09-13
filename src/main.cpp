@@ -8,7 +8,7 @@
 #include "llvm/Support/FileSystem.h"
 
 #include "ASTnode.hpp"
-#include "FunDeclNode.hpp"
+#include "FunDefNode.hpp"
 #include "Parser.hpp"
 #include "ProgramNode.hpp"
 #include "my_errors.hpp"
@@ -27,7 +27,7 @@ IRBuilder<> Builder{TheContext};
 unique_ptr<Module> TheModule = make_unique<Module>("mini-c", TheContext);
 
 map<string, FunctionSignature *> ExternedFunctions;
-map<string, FunDeclNode *> DefinedFunctions;
+map<string, FunDefNode *> DefinedFunctions;
 stack<VariableScope *> ActiveScopes;
 
 //===----------------------------------------------------------------------===//

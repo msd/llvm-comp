@@ -1,6 +1,6 @@
 #include "FunCallNode.hpp"
 
-#include "FunDeclNode.hpp"
+#include "FunDefNode.hpp"
 #include "my_errors.hpp"
 #include "the_externs.hpp"
 

@@ -1,10 +1,10 @@
-#include "FunDeclNode.hpp"
+#include "FunDefNode.hpp"
 
 #include "llvm/IR/Verifier.h"
 
 #include "the_externs.hpp"
 
-Function *FunDeclNode::codegen()
+Function *FunDefNode::codegen()
 {
     Function *the_function = TheModule->getFunction(sig()->name);
 
