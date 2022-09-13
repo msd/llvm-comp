@@ -1,6 +1,8 @@
 # Compiler using LLVM-IR
 
-Program to parse and compile source files of a C-like language (called "the language" henceforth). The language supports `int`, `float`, `double` and `bool` which map exactly to the corresponding C types.
+Program to parse and compile source files of a C-like language (called "the language"
+henceforth). The language supports `int`, `float`, `double` and
+`bool` which map exactly to the corresponding C types.
 
 ## On ubuntu 22.04
 
@@ -9,6 +11,9 @@ Program to parse and compile source files of a C-like language (called "the lang
 `sudo apt install build-essential clang llvm`
 
 ### Compiling the compiler
+
+This project uses the common out-of-source build layout.
+Execute the following to produce the language compiler
 
 ```
 mkdir build
@@ -27,12 +32,12 @@ Using the `output.ll` and some driver code (see `tests` folder) one can produce 
 
 ### Compiling a program to LLVM IR
 
-Suppose you are trying to compile `program.c`
+Suppose you are trying to compile the language source file `program.c`
 
 `my_compiler program.c`
 
-should produce the LLVM intermediate representation (IR) `program.ll` with all functions having external linkage.
-
+should produce the LLVM intermediate representation (IR)
+`program.ll` with all functions having external linkage.
 
 ### Driver
 
