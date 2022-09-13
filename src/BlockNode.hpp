@@ -6,12 +6,9 @@
 
 class BlockNode : public ASTnode
 {
-  private:
     unique_ptr<VariableScope> _scope;
 
   public:
-    VariableScope *scope();
-
     LocalDeclsNode *local_decls()
     {
         return dynamic_cast<LocalDeclsNode *>(children[0].get());

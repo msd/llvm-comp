@@ -749,13 +749,15 @@ unique_ptr<ASTnode> Parser::parse_decl()
         decl_type = BOOL_TYPE;
         // break;
 
-        // default:
-        // 	throw compiler_error();
+    default:
+        throw compiler_error(
+            "unknown decl type token received in global decl, LEXEME " +
+            CurTok->lexeme + " TYPE: " + std::to_string(CurTok->type));
     }
     CurTok = tok->next(); // Consume type token
     auto decl_name = CurTok->lexeme;
 
-    if (ActiveScopes.top()->getDecl(decl_name) != nullptr)
+    if (ActiveScopes.top()->hasName(decl_name))
     {
         throw semantic_error(
             "Identifier '" + decl_name +
@@ -820,7 +822,7 @@ unique_ptr<DeclListNode> Parser::parse_decl_list()
         decl_list->addSub(parse_decl());
     }
     assert(decl_list->children.size() > 0);
-    // TODO error if no main
+
     return decl_list;
 }
 

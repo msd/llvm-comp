@@ -12,11 +12,6 @@ BlockNode::BlockNode(Parser *parser, unique_ptr<VariableScope> scope,
     children.push_back(move(stmts));
 }
 
-VariableScope *BlockNode::scope()
-{
-    return _scope.get();
-}
-
 Value *BlockNode::codegen()
 {
     local_decls()->codegen();
