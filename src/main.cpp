@@ -8,54 +8,20 @@
 #include "llvm/Support/FileSystem.h"
 
 #include "ASTnode.hpp"
-#include "AssignmentExpr.hpp"
-#include "AssignmentLHS.hpp"
-#include "BoolNode.hpp"
-#include "DeclNode.hpp"
-#include "DisCon.hpp"
-#include "FloatNode.hpp"
-#include "FunCallNode.hpp"
 #include "FunDeclNode.hpp"
-#include "FunctionSignature.hpp"
-#include "IfStmt.hpp"
-#include "IfWithElseNode.hpp"
-#include "IntNode.hpp"
-#include "LocalDeclsNode.hpp"
-#include "NegationNode.hpp"
-#include "NotNode.hpp"
-#include "NullStmt.hpp"
-#include "Ops.hpp"
-#include "ParenExprNode.hpp"
 #include "Parser.hpp"
 #include "ProgramNode.hpp"
-#include "ReturnNothingNode.hpp"
-#include "ReturnValueNode.hpp"
-#include "StmtListNode.hpp"
-#include "Tokenizer.hpp"
-#include "ValidTypes.hpp"
-#include "VarExprNode.hpp"
-#include "WhileStmt.hpp"
-#include "coercion.hpp"
 #include "my_errors.hpp"
 
 using namespace llvm;
 using namespace llvm::sys;
 
 using std::cerr;
-using std::cout;
-using std::deque;
-using std::endl;
-using std::exception;
 using std::make_unique;
-using std::map;
-using std::move;
 using std::stack;
-using std::string;
-using std::unique_ptr;
-using std::vector;
 
 LLVMContext TheContext;
-IRBuilder<> Builder(TheContext);
+IRBuilder<> Builder{TheContext};
 
 // Make the module, which holds all the code.
 unique_ptr<Module> TheModule = make_unique<Module>("mini-c", TheContext);
@@ -116,6 +82,21 @@ static void print_ast(ASTnode *root, int level = 0)
 // Main driver code.
 //===----------------------------------------------------------------------===//
 
+inline string path_no_extension(string path)
+{
+    auto i = path.rfind('.');
+    if (i == string::npos)
+    {
+        return path;
+    }
+    return path.substr(0, i);
+}
+
+string output_path(string input_path)
+{
+    return path_no_extension(input_path) + ".ll";
+}
+
 int main(int argc, char **argv)
 {
     auto globalScope = VariableScope();
@@ -164,16 +145,16 @@ int main(int argc, char **argv)
 
     //********************* Start printing final IR **************************
     // Print out all of the generated code into a file called output.ll
-    auto Filename = "output.ll";
+    auto output_filepath = output_path(file_path);
     std::error_code EC;
-    raw_fd_ostream dest(Filename, EC, sys::fs::OF_None);
+    raw_fd_ostream dest(output_filepath, EC, sys::fs::OF_None);
 
     if (EC)
     {
         errs() << "Could not open file: " << EC.message();
         return 1;
     }
-    // TheModule->print(errs(), nullptr); // print IR to terminal
+    TheModule->print(errs(), nullptr); // print IR to terminal
     TheModule->print(dest, nullptr);
     //********************* End printing final IR ****************************
 

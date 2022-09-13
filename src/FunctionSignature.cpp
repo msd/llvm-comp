@@ -14,16 +14,16 @@ FunctionSignature::FunctionSignature(Parser *parser, string name,
 
 vector<Type *> FunctionSignature::param_types()
 {
-    vector<Type *> param_types;
+    vector<Type *> list;
     auto fun_params = params();
 
     for (int i = 0; i < fun_params->param_count(); ++i)
     {
         auto param = fun_params->get(i);
-        param_types.push_back(param->llvm_type());
+        list.push_back(param->llvm_type());
     }
-    assert(fun_params->param_count() == param_types.size());
-    return param_types;
+    assert(fun_params->param_count() == list.size());
+    return list;
 }
 
 Function *FunctionSignature::codegen()
