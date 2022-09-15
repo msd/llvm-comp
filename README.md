@@ -1,7 +1,7 @@
 # Compiler using LLVM-IR
 
 Program to parse and compile source files of a C-like language (called "the language"
-henceforth). The language supports `int`, `float`, `double` and
+henceforth). The language supports `int`, `float` and
 `bool` which map exactly to the corresponding C types.
 
 ## On ubuntu 22.04
