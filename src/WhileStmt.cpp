@@ -1,6 +1,6 @@
 #include "WhileStmt.hpp"
 
-#include "is_type.hpp"
+#include "conversions.hpp"
 #include "the_externs.hpp"
 
 Value *WhileStmt::codegen()

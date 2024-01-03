@@ -4,7 +4,7 @@
 
 Value *DeclListNode::codegen()
 {
-    Value *v;
+    Value *v = nullptr;
 
     for (int i = 0; i < children.size(); ++i)
     {
@@ -14,5 +14,7 @@ Value *DeclListNode::codegen()
             throw compiler_error("decl statement could not be created", &token);
         }
     }
+
+    // todo check decl list not empty i.e. return not null
     return v;
 }

@@ -8,18 +8,18 @@ Value *AssignmentExpr::codegen()
 {
     auto var_to_name = lhs()->var_to;
     auto AssignmentValue = rhs()->codegen();
-    Value *CastedValue;
-
     // auto var_decl = scope->getDecl(var_to_name);
 
     if (!scope->hasName(var_to_name))
     {
-        using namespace std::string_literals;
-        throw semantic_error("Variable '"s + var_to_name +
+        throw semantic_error("Variable '" + var_to_name +
                                  "' is being assigned but never declared.",
                              &token);
     }
 
+    // TODO fix warning  Switching on non-enum value without default case may
+    // not cover all cases
+    Value *CastedValue = nullptr;
     switch (scope->getDecl(var_to_name)->var_type)
     {
     case INT_TYPE:

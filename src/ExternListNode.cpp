@@ -6,7 +6,7 @@
 
 Value *ExternListNode::codegen()
 {
-    if (children.size())
+    if (!children.empty())
     {
         Value *v;
 

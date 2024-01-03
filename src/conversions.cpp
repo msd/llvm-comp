@@ -1,5 +1,6 @@
 #include "conversions.hpp"
 
+#include "ExprNode.hpp"
 #include "ValidTypes.hpp"
 #include "the_externs.hpp"
 
@@ -36,3 +37,43 @@ Type *type_homebrew_to_llvm(char type)
     }
     throw std::runtime_error("invalid type received");
 };
+
+template <>
+[[nodiscard]] Value *create_true_cmp<int>(Value *expr, Twine const &name)
+{
+    auto Z = ConstantInt::get(Type::getInt32Ty(TheContext), 0, true);
+    return Builder.CreateICmpNE(expr, Z, name);
+}
+
+template <>
+[[nodiscard]] Value *create_true_cmp<bool>(Value *expr, Twine const &name)
+{
+    auto Z = ConstantInt::get(Type::getInt1Ty(TheContext), 0, false);
+    return Builder.CreateICmpNE(expr, Z, name);
+}
+
+template <>
+[[nodiscard]] Value *create_true_cmp<float>(Value *expr, Twine const &name)
+{
+    auto Z = ConstantFP::get(Type::getFloatTy(TheContext), 0.0);
+    return Builder.CreateFCmpUNE(expr, Z, name);
+}
+
+[[nodiscard]] Value *create_expr_true_check(ExprNode *expr)
+{
+    auto cond_type = expr->expr_type();
+
+    switch (cond_type)
+    {
+    case INT_TYPE:
+        return create_true_cmp<int>(expr->codegen());
+    case FLOAT_TYPE:
+        return create_true_cmp<float>(expr->codegen());
+    case BOOL_TYPE:
+        return create_true_cmp<bool>(expr->codegen());
+    default:
+        throw compiler_error(
+            "expr type unrecognized when creating true check (unknown type: " +
+            std::to_string(cond_type) + ")");
+    }
+}

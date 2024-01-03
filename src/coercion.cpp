@@ -1,5 +1,7 @@
 #include "coercion.hpp"
 
+#include "conversions.hpp"
+#include "is_type.hpp"
 #include "my_errors.hpp"
 #include "the_externs.hpp"
 
@@ -113,11 +115,11 @@ Value *convert_value_to_int(Value *val)
 {
     auto val_type = val->getType();
 
-    if (val_type->isIntegerTy(1))
+    if (val_type->isIntegerTy(BOOL_BITS_COUNT))
     {
         return convert_bool_to_int(val);
     }
-    if (val_type->isIntegerTy(32))
+    if (val_type->isIntegerTy(INT_BITS_COUNT))
     {
         return val;
     }
@@ -130,17 +132,15 @@ Value *convert_value_to_int(Value *val)
 
 Value *convert_value_to_float(Value *val)
 {
-    auto val_type = val->getType();
-
-    if (val_type->isIntegerTy(1))
+    if (is_bool(val))
     {
         return convert_bool_to_float(val);
     }
-    if (val_type->isIntegerTy(32))
+    if (is_int(val))
     {
         return convert_int_to_float(val);
     }
-    if (val_type->isFloatTy())
+    if (is_float(val))
     {
         return val;
     }
@@ -149,17 +149,15 @@ Value *convert_value_to_float(Value *val)
 
 Value *convert_value_to_bool(Value *val)
 {
-    auto val_type = val->getType();
-
-    if (val_type->isIntegerTy(1))
+    if (is_bool(val))
     {
         return val;
     }
-    if (val_type->isIntegerTy(32))
+    if (is_int(val))
     {
         return convert_int_to_bool(val);
     }
-    if (val_type->isFloatTy())
+    if (is_float(val))
     {
         return convert_float_to_bool(val);
     }

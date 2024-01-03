@@ -5,7 +5,7 @@
 class DisCon : public RvalNode
 {
   public:
-    DisCon(Parser *parser) : RvalNode(parser)
+    explicit DisCon(Parser *parser) : RvalNode(parser)
     {
     }
     std::vector<std::unique_ptr<ASTnode>> clauses;
@@ -20,7 +20,7 @@ class DisCon : public RvalNode
 class ConjunctionNode : public DisCon
 {
   public:
-    ConjunctionNode(Parser *parser) : DisCon(parser)
+    explicit ConjunctionNode(Parser *parser) : DisCon(parser)
     {
     }
     virtual std::string node_type() const
@@ -34,7 +34,7 @@ class ConjunctionNode : public DisCon
 class DisjunctionNode : public DisCon
 {
   public:
-    DisjunctionNode(Parser *parser) : DisCon(parser)
+    explicit DisjunctionNode(Parser *parser) : DisCon(parser)
     {
     }
     virtual std::string node_type() const

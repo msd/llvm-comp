@@ -5,9 +5,8 @@
 BlockNode::BlockNode(Parser *parser, std::unique_ptr<VariableScope> scope,
                      std::unique_ptr<LocalDeclsNode> decls,
                      std::unique_ptr<StmtListNode> stmts)
-    : ASTnode(parser)
+    : ASTnode(parser), _scope{std::move(scope)}
 {
-    _scope = std::move(scope);
     children.push_back(std::move(decls));
     children.push_back(std::move(stmts));
 }

@@ -5,7 +5,7 @@
 class DeclNode : public ASTnode
 {
   public:
-    DeclNode(Parser *parser) : ASTnode(parser)
+    explicit DeclNode(Parser *parser) : ASTnode(parser)
     {
     }
     virtual std::string node_type() const = 0;
