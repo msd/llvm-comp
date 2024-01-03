@@ -31,11 +31,6 @@ class VariableScope
 
     bool hasName(std::string var_name)
     {
-        if (!(hasLocalName(var_name) ||
-              (inherited && inherited->hasName(var_name))))
-        {
-            std::cout << "DECL LOOKUP FAILED: " << var_name << std::endl;
-        }
         return hasLocalName(var_name) ||
                (inherited && inherited->hasName(var_name));
     }
