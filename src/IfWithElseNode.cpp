@@ -2,6 +2,7 @@
 
 #include "is_type.hpp"
 #include "the_externs.hpp"
+#include <stdexcept>
 
 Value *IfWithElseNode::codegen()
 {
@@ -11,22 +12,19 @@ Value *IfWithElseNode::codegen()
 
     if (is_int(cond_v))
     {
-        auto Z = ConstantInt::get(Type::getInt32Ty(TheContext), 0, true);
-        comparison = Builder.CreateICmpNE(cond->codegen(), Z, "ifcond");
-    }
-    else if (is_float(cond_v))
-    {
-        auto Z = ConstantInt::get(Type::getInt1Ty(TheContext), 0, false);
-        comparison = Builder.CreateFCmpUNE(cond->codegen(), Z, "ifcond");
+        comparison = create_true_cmp<int>(cond->codegen(), "ifcond_int");
     }
     else if (is_bool(cond_v))
     {
-        auto Z = ConstantFP::get(Type::getFloatTy(TheContext), 0.0);
-        comparison = Builder.CreateICmpNE(cond->codegen(), Z, "ifcond");
+        comparison = create_true_cmp<bool>(cond->codegen(), "ifcond_bool");
+    }
+    else if (is_float(cond_v))
+    {
+        comparison = create_true_cmp<float>(cond->codegen(), "ifcond_float");
     }
     else
     {
-        return nullptr;
+        throw std::runtime_error("expression has unknown type");
     }
     auto then_block = BasicBlock::Create(TheContext, "then", outer_function);
     auto else_block = BasicBlock::Create(TheContext, "else");
