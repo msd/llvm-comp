@@ -8,5 +8,5 @@ class DeclNode : public ASTnode
     DeclNode(Parser *parser) : ASTnode(parser)
     {
     }
-    virtual const string node_type() const = 0;
+    virtual const std::string node_type() const = 0;
 };

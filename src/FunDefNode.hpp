@@ -8,12 +8,12 @@
 class FunDefNode : public DeclNode
 {
   public:
-    FunDefNode(Parser *parser, unique_ptr<FunctionSignature> sig,
-               unique_ptr<BlockNode> body)
+    FunDefNode(Parser *parser, std::unique_ptr<FunctionSignature> sig,
+               std::unique_ptr<BlockNode> body)
         : DeclNode(parser)
     {
-        children.push_back(move(sig));
-        children.push_back(move(body));
+        children.push_back(std::move(sig));
+        children.push_back(std::move(body));
     }
 
     FunctionSignature *sig() const
@@ -26,12 +26,12 @@ class FunDefNode : public DeclNode
         return dynamic_cast<BlockNode *>(children[1].get());
     }
 
-    virtual const string node_type() const
+    virtual const std::string node_type() const
     {
         return "FUN DECL";
     }
 
-    virtual string to_string() const
+    virtual std::string to_string() const
     {
         return node_type() + " node NAME=" + sig()->name +
                " RETURN=" + type_to_str(sig()->return_type);

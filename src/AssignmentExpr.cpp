@@ -41,7 +41,8 @@ Value *AssignmentExpr::codegen()
 }
 
 AssignmentExpr::AssignmentExpr(Parser *parser, VariableScope *scope,
-                               unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs)
+                               std::unique_ptr<ASTnode> lhs,
+                               std::unique_ptr<ASTnode> rhs)
     : ExprNode(parser), scope(scope)
 {
     children.push_back(move(lhs));

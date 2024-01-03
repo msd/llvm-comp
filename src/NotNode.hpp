@@ -5,9 +5,9 @@
 class NotNode : public RvalNode
 {
   public:
-    NotNode(Parser *parser, unique_ptr<ASTnode> sub) : RvalNode(parser)
+    NotNode(Parser *parser, std::unique_ptr<ASTnode> sub) : RvalNode(parser)
     {
-        addSub(move(sub));
+        addSub(std::move(sub));
     }
 
     RvalNode *negatee()
@@ -15,7 +15,7 @@ class NotNode : public RvalNode
         return dynamic_cast<RvalNode *>(children[0].get());
     }
 
-    virtual const string node_type() const
+    virtual const std::string node_type() const
     {
         return "NOT";
     }

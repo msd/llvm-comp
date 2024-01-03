@@ -8,20 +8,20 @@ class VariableScope;
 class VarExprNode : public RvalNode
 {
   public:
-    const string name;
+    const std::string name;
     const VarDeclNode *decl;
     VariableScope *scope;
-    VarExprNode(Parser *parser, VariableScope *scope, string name,
+    VarExprNode(Parser *parser, VariableScope *scope, std::string name,
                 VarDeclNode *decl)
         : RvalNode(parser), name(name), decl(decl), scope(scope)
     {
     }
-    virtual const string node_type() const
+    virtual const std::string node_type() const
     {
         return "VAR EXPR";
     }
 
-    virtual string to_string() const
+    virtual std::string to_string() const
     {
         return node_type() + " node NAME=" + name;
     }

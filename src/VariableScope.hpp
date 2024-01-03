@@ -5,21 +5,17 @@
 
 #include "VarDeclNode.hpp"
 
-using std::cout;
-using std::endl;
-using std::map;
-
 class VariableScope
 {
     VariableScope *inherited;
     // map<string, Value *> local_decls{};
-    map<string, Value *> local_addrs{};
-    map<string, VarDeclNode *> local_decls{};
+    std::map<std::string, Value *> local_addrs{};
+    std::map<std::string, VarDeclNode *> local_decls{};
     VariableScope(VariableScope *inherited) : inherited(inherited)
     {
     }
 
-    auto hasLocalName(string var_name)
+    auto hasLocalName(std::string var_name)
     {
         return static_cast<bool>(local_decls.count(var_name));
     }
@@ -30,26 +26,26 @@ class VariableScope
     }
     static auto inherit_vars(VariableScope *outer_scope)
     {
-        return unique_ptr<VariableScope>{new VariableScope(outer_scope)};
+        return std::unique_ptr<VariableScope>{new VariableScope(outer_scope)};
     }
 
-    bool hasName(string var_name)
+    bool hasName(std::string var_name)
     {
         if (!(hasLocalName(var_name) ||
               (inherited && inherited->hasName(var_name))))
         {
-            cout << "DECL LOOKUP FAILED: " << var_name << endl;
+            std::cout << "DECL LOOKUP FAILED: " << var_name << std::endl;
         }
         return hasLocalName(var_name) ||
                (inherited && inherited->hasName(var_name));
     }
 
-    void setAddr(string var_name, Value *addr);
+    void setAddr(std::string var_name, Value *addr);
 
-    void setDecl(string var_name, VarDeclNode *decl);
+    void setDecl(std::string var_name, VarDeclNode *decl);
 
     // todo check calls to getDecl can be substituted for hasLocalName
-    VarDeclNode *getDecl(string identifier)
+    VarDeclNode *getDecl(std::string identifier)
     {
         if (local_decls.count(identifier))
         {
@@ -62,7 +58,7 @@ class VariableScope
         return nullptr;
     }
 
-    bool hasAddr(string var_name)
+    bool hasAddr(std::string var_name)
     {
         if (hasLocalName(var_name))
         {
@@ -75,5 +71,5 @@ class VariableScope
         return false;
     }
 
-    Value *getAddr(string var_name);
+    Value *getAddr(std::string var_name);
 };

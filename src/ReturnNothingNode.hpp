@@ -8,7 +8,7 @@ class ReturnNothingNode : public ASTnode
     ReturnNothingNode(Parser *parser) : ASTnode(parser)
     {
     }
-    virtual const string node_type() const
+    virtual const std::string node_type() const
     {
         return "RETURN NOTHING STMT";
     }

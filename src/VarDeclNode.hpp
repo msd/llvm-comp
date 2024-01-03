@@ -10,22 +10,22 @@ class VarDeclNode : public DeclNode
 {
   public:
     VariableScope *scope;
-    const string var_name;
+    const std::string var_name;
     const char var_type;
     const bool is_global;
-    VarDeclNode(Parser *parser, VariableScope *scope, string var_name,
+    VarDeclNode(Parser *parser, VariableScope *scope, std::string var_name,
                 const char var_type, bool is_global)
         : DeclNode(parser), scope(scope), var_name(var_name),
           var_type(var_type), is_global(is_global)
     {
     }
 
-    virtual const string node_type() const
+    virtual const std::string node_type() const
     {
         return "VAR DECL";
     }
 
-    virtual string to_string() const
+    virtual std::string to_string() const
     {
         return node_type() + " node NAME=" + var_name +
                " TYPE=" + type_to_str(var_type);

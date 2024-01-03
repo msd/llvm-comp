@@ -6,9 +6,10 @@
 class NegationNode : public RvalNode
 {
   public:
-    NegationNode(Parser *parser, unique_ptr<ASTnode> rval)  : RvalNode(parser)
+    NegationNode(Parser *parser, std::unique_ptr<ASTnode> rval)
+        : RvalNode(parser)
     {
-        addSub(move(rval));
+        addSub(std::move(rval));
     }
 
     RvalNode *negatee()
@@ -16,7 +17,7 @@ class NegationNode : public RvalNode
         return dynamic_cast<RvalNode *>(children[0].get());
     }
 
-    virtual const string node_type() const
+    virtual const std::string node_type() const
     {
         return "NEG";
     }

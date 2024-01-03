@@ -5,9 +5,10 @@
 class ParenExprNode : public RvalNode
 {
   public:
-    ParenExprNode(Parser *parser, unique_ptr<ASTnode> expr) : RvalNode(parser)
+    ParenExprNode(Parser *parser, std::unique_ptr<ASTnode> expr)
+        : RvalNode(parser)
     {
-        children.push_back(move(expr));
+        children.push_back(std::move(expr));
     }
 
     RvalNode *expr()
@@ -15,7 +16,7 @@ class ParenExprNode : public RvalNode
         return dynamic_cast<RvalNode *>(children[0].get());
     }
 
-    virtual const string node_type() const
+    virtual const std::string node_type() const
     {
         return "PAREN EXPR";
     }

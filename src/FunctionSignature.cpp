@@ -4,17 +4,17 @@
 #include "conversions.hpp"
 #include "the_externs.hpp"
 
-FunctionSignature::FunctionSignature(Parser *parser, string name,
+FunctionSignature::FunctionSignature(Parser *parser, std::string name,
                                      const char return_type,
-                                     unique_ptr<ASTnode> params)
+                                     std::unique_ptr<ASTnode> params)
     : ASTnode(parser), name(name), return_type(return_type)
 {
-    children.push_back(move(params));
+    children.push_back(std::move(params));
 }
 
-vector<Type *> FunctionSignature::param_types()
+std::vector<Type *> FunctionSignature::param_types()
 {
-    vector<Type *> list;
+    std::vector<Type *> list;
     auto fun_params = params();
 
     for (int i = 0; i < fun_params->param_count(); ++i)

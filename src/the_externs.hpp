@@ -13,14 +13,11 @@
 class VariableScope;
 class FunDefNode;
 
-using std::map;
-using std::stack;
-using std::unique_ptr;
 using namespace llvm;
 
 extern LLVMContext TheContext;
 extern IRBuilder<> Builder;
-extern unique_ptr<Module> TheModule;
-extern stack<VariableScope *> ActiveScopes;
-extern map<string, FunDefNode *> DefinedFunctions;
-extern map<string, FunctionSignature *> ExternedFunctions;
+extern std::unique_ptr<Module> TheModule;
+extern std::stack<VariableScope *> ActiveScopes;
+extern std::map<std::string, FunDefNode *> DefinedFunctions;
+extern std::map<std::string, FunctionSignature *> ExternedFunctions;

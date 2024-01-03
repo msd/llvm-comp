@@ -12,7 +12,7 @@ class IntNode : public LitNode<int>
     IntNode(Parser *parser, int litVal) : LitNode<int>(parser, litVal)
     {
     }
-    virtual const string node_type() const
+    virtual const std::string node_type() const
     {
         return "INT_LIT";
     }

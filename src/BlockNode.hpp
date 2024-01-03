@@ -6,7 +6,7 @@
 
 class BlockNode : public ASTnode
 {
-    unique_ptr<VariableScope> _scope;
+    std::unique_ptr<VariableScope> _scope;
 
   public:
     LocalDeclsNode *local_decls()
@@ -19,12 +19,13 @@ class BlockNode : public ASTnode
         return dynamic_cast<StmtListNode *>(children[1].get());
     }
 
-    virtual const string node_type() const
+    virtual const std::string node_type() const
     {
         return "BLOCK";
     }
 
-    BlockNode(Parser *parser, unique_ptr<VariableScope> scope,
-              unique_ptr<LocalDeclsNode> decls, unique_ptr<StmtListNode> stmts);
+    BlockNode(Parser *parser, std::unique_ptr<VariableScope> scope,
+              std::unique_ptr<LocalDeclsNode> decls,
+              std::unique_ptr<StmtListNode> stmts);
     virtual Value *codegen();
 };

@@ -4,30 +4,30 @@
 
 class FunctionSignature : public ASTnode
 {
-    vector<Type *> param_types();
+    std::vector<Type *> param_types();
     Type *return_type_llvm();
 
   public:
-    string name;
+    std::string name;
     const char return_type;
-    FunctionSignature(Parser *parser, string name, const char return_type,
-                      unique_ptr<ASTnode> params);
+    FunctionSignature(Parser *parser, std::string name, const char return_type,
+                      std::unique_ptr<ASTnode> params);
     ParamsNode *params()
     {
         return dynamic_cast<ParamsNode *>(children[0].get());
     }
 
-    virtual const string node_type() const
+    virtual const std::string node_type() const
     {
         return "FUNCTION SIGNATURE";
     }
 
-    virtual string return_node_type()
+    virtual std::string return_node_type()
     {
         return type_to_str(return_type);
     }
 
-    virtual string to_string() const
+    virtual std::string to_string() const
     {
         return node_type() + " node RETURN=" + type_to_str(return_type);
     }

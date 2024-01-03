@@ -18,7 +18,7 @@ class ParamsNode : public ASTnode
         return children.size();
     }
 
-    virtual const string node_type() const
+    virtual const std::string node_type() const
     {
         return "PARAMS";
     }

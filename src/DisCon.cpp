@@ -41,7 +41,7 @@ Value *ConjunctionNode::codegen()
             current_block); // add previous block
         current_block = next_block;
         next_block = BasicBlock::Create(
-            TheContext, string("conj_cl") +
+            TheContext, std::string("conj_cl") +
                             std::to_string(i + 1)); // last claus in disjunction
         Builder.CreateCondBr(convert_value_to_bool(children[i]->codegen()),
                              next_block, end_block);
@@ -104,7 +104,7 @@ Value *DisjunctionNode::codegen()
             current_block); // add previous block
         current_block = next_block;
         next_block = BasicBlock::Create(
-            TheContext, string("disj_cl") +
+            TheContext, std::string("disj_cl") +
                             std::to_string(i + 1)); // last claus in disjunction
         Builder.CreateCondBr(convert_value_to_bool(children[i]->codegen()),
                              end_block, next_block);

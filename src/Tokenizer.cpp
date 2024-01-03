@@ -2,12 +2,8 @@
 
 #include "the_externs.hpp"
 
-using std::make_unique;
-using std::stof;
-using std::stoi;
-
-Tokenizer::Tokenizer(unique_ptr<ifstream> &&file)
-    : file{move(file)}, lineNo(1), columnNo(1)
+Tokenizer::Tokenizer(std::unique_ptr<std::ifstream> &&file)
+    : file{std::move(file)}, lineNo(1), columnNo(1)
 {
 }
 
@@ -20,12 +16,12 @@ int Tokenizer::nextChar()
     return file->get();
 }
 
-unique_ptr<TOKEN> Tokenizer::next()
+std::unique_ptr<TOKEN> Tokenizer::next()
 {
-    unique_ptr<TOKEN> temp;
+    std::unique_ptr<TOKEN> temp;
     if (tok_buffer.size())
     {
-        temp = move(tok_buffer.front());
+        temp = std::move(tok_buffer.front());
         tok_buffer.pop_front();
     }
     else
@@ -36,7 +32,7 @@ unique_ptr<TOKEN> Tokenizer::next()
     return temp;
 }
 
-unique_ptr<TOKEN> Tokenizer::gettok()
+std::unique_ptr<TOKEN> Tokenizer::gettok()
 {
     static int LastChar = ' ';
     static int NextChar = ' ';
@@ -174,7 +170,7 @@ unique_ptr<TOKEN> Tokenizer::gettok()
 
     if (isdigit(LastChar) || (LastChar == '.')) // Number: [0-9]+.
     {
-        string NumStr;
+        std::string NumStr;
 
         if (LastChar == '.') // Floatingpoint Number: .[0-9]+
         {
@@ -334,21 +330,21 @@ unique_ptr<TOKEN> Tokenizer::gettok()
 
     // Otherwise, just return the character as its ascii value.
     int ThisChar = LastChar;
-    string s(1, ThisChar);
+    std::string s(1, ThisChar);
 
     LastChar = nextChar();
     columnNo++;
     return returnTok(s, int(ThisChar));
 }
 
-void Tokenizer::put_back(unique_ptr<TOKEN> tok)
+void Tokenizer::put_back(std::unique_ptr<TOKEN> tok)
 {
     tok_buffer.push_front(move(tok));
 }
 
-unique_ptr<TOKEN> Tokenizer::returnTok(string lexVal, int tok_type)
+std::unique_ptr<TOKEN> Tokenizer::returnTok(std::string lexVal, int tok_type)
 {
-    auto return_tok = make_unique<TOKEN>();
+    auto return_tok = std::make_unique<TOKEN>();
 
     return_tok->lexeme = lexVal;
     return_tok->type = tok_type;
@@ -358,10 +354,10 @@ unique_ptr<TOKEN> Tokenizer::returnTok(string lexVal, int tok_type)
 }
 
 template <typename V>
-unique_ptr<TokenWithValue<V>> Tokenizer::retTokVal(string lexVal, int tok_type,
-                                                   V value)
+std::unique_ptr<TokenWithValue<V>> Tokenizer::retTokVal(std::string lexVal,
+                                                        int tok_type, V value)
 {
-    auto return_tok = make_unique<TokenWithValue<V>>();
+    auto return_tok = std::make_unique<TokenWithValue<V>>();
 
     return_tok->lexeme = lexVal;
     return_tok->type = tok_type;

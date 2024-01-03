@@ -4,13 +4,11 @@
 
 #include "TokenType.hpp"
 
-using std::string;
-
 // TOKEN struct is used to keep track of information about a token
 struct TOKEN
 {
     int type = INVALID;
-    string lexeme;
+    std::string lexeme;
     int lineNo;
     int columnNo;
     virtual ~TOKEN() = default;

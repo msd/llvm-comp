@@ -8,15 +8,9 @@
 #include "Token.hpp"
 #include "TokenType.hpp"
 
-using std::deque;
-using std::ifstream;
-using std::string;
-using std::unique_ptr;
-using std::vector;
-
 class Tokenizer
 {
-    deque<unique_ptr<TOKEN>> tok_buffer;
+    std::deque<std::unique_ptr<TOKEN>> tok_buffer;
 
     /**
      * @brief Reads another character from the file, if one exists.
@@ -32,25 +26,25 @@ class Tokenizer
      * @return the token with the specified lexeme and type and the current
      * line and column
      */
-    unique_ptr<TOKEN> returnTok(string lexVal, int tok_type);
+    std::unique_ptr<TOKEN> returnTok(std::string lexVal, int tok_type);
 
     // Read file line by line -- or look for \n and if found add 1 to line
     // number and reset column number to 0
     /// gettok - Return the next token from standard input.
-    unique_ptr<TOKEN> gettok();
+    std::unique_ptr<TOKEN> gettok();
 
-    unique_ptr<ifstream> file;
+    std::unique_ptr<std::ifstream> file;
 
     template <typename V>
-    unique_ptr<TokenWithValue<V>> retTokVal(string lexVal, int tok_type,
-                                            V value);
+    std::unique_ptr<TokenWithValue<V>> retTokVal(std::string lexVal,
+                                                 int tok_type, V value);
 
   public:
-    string IdentifierStr; // Filled in if IDENT
-    int IntVal;           // Filled in if INT_LIT
-    bool BoolVal;         // Filled in if BOOL_LIT
-    float FloatVal;       // Filled in if FLOAT_LIT
-    string StringVal;     // Filled in if String Literal
+    std::string IdentifierStr; // Filled in if IDENT
+    int IntVal;                // Filled in if INT_LIT
+    bool BoolVal;              // Filled in if BOOL_LIT
+    float FloatVal;            // Filled in if FLOAT_LIT
+    std::string StringVal;     // Filled in if String Literal
     int lineNo, columnNo;
 
     /// CurTok/next - Provide a simple token buffer.  CurTok is the
@@ -58,10 +52,10 @@ class Tokenizer
     /// token from the lexer and updates CurTok with its results.
     // TOKEN CurTok;
 
-    Tokenizer(unique_ptr<ifstream> &&);
+    Tokenizer(std::unique_ptr<std::ifstream> &&);
     ~Tokenizer();
 
-    unique_ptr<TOKEN> next();
+    std::unique_ptr<TOKEN> next();
 
-    void put_back(unique_ptr<TOKEN> tok);
+    void put_back(std::unique_ptr<TOKEN> tok);
 };

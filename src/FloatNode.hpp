@@ -10,7 +10,7 @@ class FloatNode : public LitNode<float>
     {
     }
 
-    virtual const string node_type() const
+    virtual const std::string node_type() const
     {
         return "FLOAT_LIT";
     }

@@ -5,8 +5,8 @@
 class OperatorNode : public RvalNode
 {
   public:
-    OperatorNode(Parser *parser, unique_ptr<ASTnode> lhs,
-                 unique_ptr<ASTnode> rhs)
+    OperatorNode(Parser *parser, std::unique_ptr<ASTnode> lhs,
+                 std::unique_ptr<ASTnode> rhs)
         : RvalNode(parser)
     {
         children.push_back(move(lhs));
@@ -23,7 +23,7 @@ class OperatorNode : public RvalNode
         return dynamic_cast<RvalNode *>(children[1].get());
     }
 
-    virtual string to_string() const
+    virtual std::string to_string() const
     {
         return node_type() + " node with 2 children";
     }

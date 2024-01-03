@@ -6,18 +6,18 @@
 class ParamNode : public ASTnode
 {
   public:
-    const string name;
+    const std::string name;
     const char type;
-    ParamNode(Parser *parser, string name, const char type)
+    ParamNode(Parser *parser, std::string name, const char type)
         : ASTnode(parser), name(name), type(type)
     {
     }
-    virtual const string node_type() const
+    virtual const std::string node_type() const
     {
         return "PARAM";
     }
 
-    virtual string to_string() const
+    virtual std::string to_string() const
     {
         return node_type() + " node NAME=" + name +
                ", TYPE=" + type_to_str(type);

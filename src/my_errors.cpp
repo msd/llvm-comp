@@ -4,15 +4,15 @@
 
 #include "the_externs.hpp"
 
-semantic_error::semantic_error(string err_msg, TOKEN *token)
-    : err_msg(move(err_msg)), lineNo(token->lineNo), columnNo(token->columnNo),
-      erroneous_token(token->lexeme)
+semantic_error::semantic_error(std::string err_msg, TOKEN *token)
+    : err_msg(std::move(err_msg)), lineNo(token->lineNo),
+      columnNo(token->columnNo), erroneous_token(token->lexeme)
 {
 }
 
-syntax_error::syntax_error(string err_msg, TOKEN *token)
-    : err_msg(move(err_msg)), lineNo(token->lineNo), columnNo(token->columnNo),
-      erroneous_token(token->lexeme)
+syntax_error::syntax_error(std::string err_msg, TOKEN *token)
+    : err_msg(std::move(err_msg)), lineNo(token->lineNo),
+      columnNo(token->columnNo), erroneous_token(token->lexeme)
 {
 }
 
@@ -20,22 +20,22 @@ compiler_error::compiler_error()
     : err_msg("Unknown compiler error"), lineNo(1), columnNo(1)
 {
 }
-compiler_error::compiler_error(string err_msg, TOKEN *token)
-    : err_msg(move(err_msg)), lineNo(token->lineNo), columnNo(token->columnNo),
-      erroneous_token(token->lexeme)
+compiler_error::compiler_error(std::string err_msg, TOKEN *token)
+    : err_msg(std::move(err_msg)), lineNo(token->lineNo),
+      columnNo(token->columnNo), erroneous_token(token->lexeme)
 {
 }
 
-AllocaInst *CreateEntryBlockAlloca(Type *VarType, const string &VarName)
+AllocaInst *CreateEntryBlockAlloca(Type *VarType, const std::string &VarName)
 {
     auto TheFunction = Builder.GetInsertBlock()->getParent();
     IRBuilder<> TmpB(&TheFunction->getEntryBlock(),
                      TheFunction->getEntryBlock().begin());
 
-    return TmpB.CreateAlloca(VarType, 0, VarName.c_str());
+    return TmpB.CreateAlloca(VarType, 0, VarName);
 }
 
-string type_to_str(const char type)
+std::string type_to_str(const char type)
 {
     switch (type)
     {

@@ -2,7 +2,7 @@
 
 #include "my_errors.hpp"
 
-void VariableScope::setAddr(string var_name, Value *addr)
+void VariableScope::setAddr(std::string var_name, Value *addr)
 {
     if (hasLocalName(var_name))
     {
@@ -18,7 +18,7 @@ void VariableScope::setAddr(string var_name, Value *addr)
     }
 }
 
-Value *VariableScope::getAddr(string var_name)
+Value *VariableScope::getAddr(std::string var_name)
 {
     if (hasLocalName(var_name))
     {
@@ -32,11 +32,11 @@ Value *VariableScope::getAddr(string var_name)
     return nullptr;
 }
 
-void VariableScope::setDecl(string var_name, VarDeclNode *decl)
+void VariableScope::setDecl(std::string var_name, VarDeclNode *decl)
 {
     if (hasLocalName(var_name))
     {
-        throw semantic_error(string() + "attempted to define " + var_name +
+        throw semantic_error(std::string() + "attempted to define " + var_name +
                                  " but has been already defined in this scope",
                              &decl->token);
     }

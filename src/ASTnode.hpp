@@ -10,10 +10,6 @@
 
 using namespace llvm;
 
-using std::string;
-using std::unique_ptr;
-using std::vector;
-
 class Parser;
 
 /// ASTnode - Base class for all AST nodes.
@@ -22,11 +18,11 @@ class ASTnode
   public:
     TOKEN token;
     ASTnode(Parser *parser);
-    vector<unique_ptr<ASTnode>> children{};
+    std::vector<std::unique_ptr<ASTnode>> children{};
     virtual Value *codegen() = 0;
-    virtual const string node_type() const = 0;
+    virtual const std::string node_type() const = 0;
 
-    virtual string to_string() const
+    virtual std::string to_string() const
     {
         return node_type() + " node with " + std::to_string(children.size()) +
                " child(ren)";
@@ -36,12 +32,12 @@ class ASTnode
     {
     }
 
-    virtual void addSub(unique_ptr<ASTnode> subExpr)
+    virtual void addSub(std::unique_ptr<ASTnode> subExpr)
     {
-        children.push_back(move(subExpr));
+        children.push_back(std::move(subExpr));
     }
 
-    void setSubs(vector<unique_ptr<ASTnode>> subs)
+    void setSubs(std::vector<std::unique_ptr<ASTnode>> subs)
     {
         children = move(subs);
     }

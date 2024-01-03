@@ -2,14 +2,14 @@
 
 #include "the_externs.hpp"
 
-BlockNode::BlockNode(Parser *parser, unique_ptr<VariableScope> scope,
-                     unique_ptr<LocalDeclsNode> decls,
-                     unique_ptr<StmtListNode> stmts)
+BlockNode::BlockNode(Parser *parser, std::unique_ptr<VariableScope> scope,
+                     std::unique_ptr<LocalDeclsNode> decls,
+                     std::unique_ptr<StmtListNode> stmts)
     : ASTnode(parser)
 {
-    _scope = move(scope);
-    children.push_back(move(decls));
-    children.push_back(move(stmts));
+    _scope = std::move(scope);
+    children.push_back(std::move(decls));
+    children.push_back(std::move(stmts));
 }
 
 Value *BlockNode::codegen()

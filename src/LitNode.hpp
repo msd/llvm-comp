@@ -13,12 +13,12 @@ template <typename T> class LitNode : public RvalNode
         data = litVal;
     }
 
-    virtual string data_str() const
+    virtual std::string data_str() const
     {
         return std::to_string(data);
     }
 
-    virtual string to_string() const
+    virtual std::string to_string() const
     {
         return node_type() + "=" + data_str();
     }

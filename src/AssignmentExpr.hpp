@@ -19,7 +19,7 @@ class AssignmentExpr : public ExprNode
         return dynamic_cast<ExprNode *>(children[1].get());
     }
 
-    virtual const string node_type() const
+    virtual const std::string node_type() const
     {
         return "ASSIGNMENT STMT";
     }
@@ -30,6 +30,6 @@ class AssignmentExpr : public ExprNode
     }
 
     AssignmentExpr(Parser *parser, VariableScope *scope,
-                   unique_ptr<ASTnode> lhs, unique_ptr<ASTnode> rhs);
+                   std::unique_ptr<ASTnode> lhs, std::unique_ptr<ASTnode> rhs);
     virtual Value *codegen();
 };

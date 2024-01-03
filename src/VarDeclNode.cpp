@@ -13,7 +13,7 @@ Value *VarDeclNode::codegen()
     {
         if (TheModule->getGlobalVariable(var_name))
         {
-            throw semantic_error(string() +
+            throw semantic_error(std::string() +
                                      "Tried to declare global variable " +
                                      var_name + " twice",
                                  &token);
@@ -38,8 +38,8 @@ Value *VarDeclNode::codegen()
             break;
 
         default:
-            throw compiler_error(string() + "Unknown variable type " + var_type,
-                                 &token);
+            throw compiler_error(
+                std::string() + "Unknown variable type " + var_type, &token);
         }
         auto Address = new GlobalVariable(
             *TheModule, T, false, GlobalValue::ExternalLinkage, V, var_name);

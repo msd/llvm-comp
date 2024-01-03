@@ -8,7 +8,7 @@ class DeclListNode : public ASTnode
     DeclListNode(Parser *parser) : ASTnode(parser)
     {
     }
-    virtual const string node_type() const
+    virtual const std::string node_type() const
     {
         return "DECL LIST";
     }

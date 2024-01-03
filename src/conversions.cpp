@@ -34,5 +34,5 @@ Type *type_homebrew_to_llvm(char type)
     case BOOL_TYPE:
         return Type::getInt1Ty(TheContext);
     }
-    throw runtime_error("invalid type received");
+    throw std::runtime_error("invalid type received");
 };
