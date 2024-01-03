@@ -19,7 +19,7 @@ int Tokenizer::nextChar()
 std::unique_ptr<TOKEN> Tokenizer::next()
 {
     std::unique_ptr<TOKEN> temp;
-    if (tok_buffer.size())
+    if (!tok_buffer.empty())
     {
         temp = std::move(tok_buffer.front());
         tok_buffer.pop_front();
@@ -226,7 +226,7 @@ std::unique_ptr<TOKEN> Tokenizer::gettok()
         {
             LastChar = NextChar;
             columnNo++;
-            return returnTok("&", int('&'));
+            return returnTok("&", static_cast<int>('&'));
         }
     }
 
@@ -243,7 +243,7 @@ std::unique_ptr<TOKEN> Tokenizer::gettok()
         {
             LastChar = NextChar;
             columnNo++;
-            return returnTok("|", int('|'));
+            return returnTok("|", static_cast<int>('|'));
         }
     }
 
@@ -334,12 +334,12 @@ std::unique_ptr<TOKEN> Tokenizer::gettok()
 
     LastChar = nextChar();
     columnNo++;
-    return returnTok(s, int(ThisChar));
+    return returnTok(s, ThisChar);
 }
 
 void Tokenizer::put_back(std::unique_ptr<TOKEN> tok)
 {
-    tok_buffer.push_front(move(tok));
+    tok_buffer.push_front(std::move(tok));
 }
 
 std::unique_ptr<TOKEN> Tokenizer::returnTok(std::string lexVal, int tok_type)
