@@ -8,7 +8,7 @@ class LocalDeclsNode : public ASTnode
     LocalDeclsNode(Parser *parser) : ASTnode(parser)
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "LOCAL DECLS";
     }

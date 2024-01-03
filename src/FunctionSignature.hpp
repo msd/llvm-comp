@@ -17,7 +17,7 @@ class FunctionSignature : public ASTnode
         return dynamic_cast<ParamsNode *>(children[0].get());
     }
 
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "FUNCTION SIGNATURE";
     }

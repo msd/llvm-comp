@@ -23,7 +23,7 @@ class ConjunctionNode : public DisCon
     ConjunctionNode(Parser *parser) : DisCon(parser)
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "CONJUNCTION";
     }
@@ -37,7 +37,7 @@ class DisjunctionNode : public DisCon
     DisjunctionNode(Parser *parser) : DisCon(parser)
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "DISJUNCTION";
     }

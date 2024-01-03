@@ -16,7 +16,7 @@ class VarExprNode : public RvalNode
         : RvalNode(parser), name(name), decl(decl), scope(scope)
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "VAR EXPR";
     }

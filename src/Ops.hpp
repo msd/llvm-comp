@@ -10,7 +10,7 @@ class OpADD : public OperatorNode
         : OperatorNode(parser, std::move(lhs), std::move(rhs))
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "ADDITION OPERATOR";
     }
@@ -28,7 +28,7 @@ class OpMULT : public OperatorNode
         : OperatorNode(parser, std::move(lhs), std::move(rhs))
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "MULTIPLICATION OPERATOR";
     }
@@ -46,7 +46,7 @@ class OpDIV : public OperatorNode
         : OperatorNode(parser, std::move(lhs), std::move(rhs))
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "DIVISION OPERATOR";
     }
@@ -64,7 +64,7 @@ class OpMODULO : public OperatorNode
         : OperatorNode(parser, std::move(lhs), std::move(rhs))
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "MODULO OPERATOR";
     }
@@ -82,7 +82,7 @@ class OpSUB : public OperatorNode
         : OperatorNode(parser, std::move(lhs), std::move(rhs))
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "SUBTRACTION OPERATOR";
     }
@@ -100,7 +100,7 @@ class EqualityNode : public OperatorNode
         : OperatorNode(parser, std::move(lhs), std::move(rhs))
     {
     }
-    virtual const std::string node_type() const = 0;
+    virtual std::string node_type() const = 0;
 
     virtual char expr_type();
 };
@@ -113,7 +113,7 @@ class InequalityNode : public OperatorNode
         : OperatorNode(parser, std::move(lhs), std::move(rhs))
     {
     }
-    virtual const std::string node_type() const = 0;
+    virtual std::string node_type() const = 0;
 
     virtual char expr_type();
 };
@@ -126,7 +126,7 @@ class OpEQ : public EqualityNode
         : EqualityNode(parser, std::move(lhs), std::move(rhs))
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "EQUALS OPERATOR";
     }
@@ -142,7 +142,7 @@ class OpNE : public EqualityNode
         : EqualityNode(parser, std::move(lhs), std::move(rhs))
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "NOT EQUALS OPERATOR";
     }
@@ -158,7 +158,7 @@ class OpLE : public InequalityNode
         : InequalityNode(parser, std::move(lhs), std::move(rhs))
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "LESS OR EQUAL OPERATOR";
     }
@@ -174,7 +174,7 @@ class OpLT : public InequalityNode
         : InequalityNode(parser, std::move(lhs), std::move(rhs))
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "LESS THAN OPERATOR";
     }
@@ -190,7 +190,7 @@ class OpGE : public InequalityNode
         : InequalityNode(parser, std::move(lhs), std::move(rhs))
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "GREATER OR EQUAL OPERATOR";
     }
@@ -206,7 +206,7 @@ class OpGT : public InequalityNode
         : InequalityNode(parser, std::move(lhs), std::move(rhs))
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "GREATER THAN OPERATOR";
     }

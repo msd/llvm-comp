@@ -19,7 +19,7 @@ class IfStmt : public ASTnode
         then_body = dynamic_cast<BlockNode *>(children[1].get());
     }
 
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "IF STMT";
     }

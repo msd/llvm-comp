@@ -22,7 +22,7 @@ class IfWithElseNode : public ASTnode
         this->else_body = dynamic_cast<BlockNode *>(children[2].get());
     }
 
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "IF WITH ELSE STMT";
     }

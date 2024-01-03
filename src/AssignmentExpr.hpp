@@ -19,7 +19,7 @@ class AssignmentExpr : public ExprNode
         return dynamic_cast<ExprNode *>(children[1].get());
     }
 
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "ASSIGNMENT STMT";
     }

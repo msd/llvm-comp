@@ -16,7 +16,7 @@ class ParenExprNode : public RvalNode
         return dynamic_cast<RvalNode *>(children[0].get());
     }
 
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "PAREN EXPR";
     }

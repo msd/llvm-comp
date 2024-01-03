@@ -11,7 +11,7 @@ class BoolNode : public LitNode<bool>
         return data;
     }
 
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "BOOL_LIT";
     }

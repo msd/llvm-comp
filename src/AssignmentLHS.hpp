@@ -11,7 +11,7 @@ class AssignmentLHS : public ASTnode
         : ASTnode(parser), var_to(var_to)
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "ASSISGNENT LHS";
     }

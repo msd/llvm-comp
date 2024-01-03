@@ -19,7 +19,7 @@ class BlockNode : public ASTnode
         return dynamic_cast<StmtListNode *>(children[1].get());
     }
 
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "BLOCK";
     }

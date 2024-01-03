@@ -12,7 +12,7 @@ class ParamNode : public ASTnode
         : ASTnode(parser), name(name), type(type)
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "PARAM";
     }

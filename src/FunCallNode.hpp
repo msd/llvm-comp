@@ -10,7 +10,7 @@ class FunCallNode : public RvalNode
         : RvalNode(parser), fun_name(fun_name)
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "FUNCTION CALL";
     }

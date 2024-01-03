@@ -26,7 +26,7 @@ class FunDefNode : public DeclNode
         return dynamic_cast<BlockNode *>(children[1].get());
     }
 
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "FUN DECL";
     }

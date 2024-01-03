@@ -8,7 +8,7 @@ class NullStmt : public ASTnode
     NullStmt(Parser *parser) : ASTnode(parser)
     {
     }
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "NULL STMT";
     }

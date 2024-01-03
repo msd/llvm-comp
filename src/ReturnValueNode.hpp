@@ -14,7 +14,7 @@ class ReturnValueNode : public ASTnode
         this->expr = dynamic_cast<ExprNode *>(children[0].get());
     }
 
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "RETURN VALUE STMT";
     }

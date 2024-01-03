@@ -23,7 +23,7 @@ class WhileStmt : public ASTnode
         return children[1].get();
     }
 
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "WHILE STMT";
     }

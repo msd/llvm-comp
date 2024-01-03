@@ -20,7 +20,7 @@ class VarDeclNode : public DeclNode
     {
     }
 
-    virtual const std::string node_type() const
+    virtual std::string node_type() const
     {
         return "VAR DECL";
     }
