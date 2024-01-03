@@ -55,14 +55,14 @@ inline llvm::raw_ostream &operator<<(llvm::raw_ostream &os, const ASTnode &ast)
 
 static void print_ast(ASTnode *root, int level = 0)
 {
-    std::string pre = "";
+    std::string pre{};
 
     for (int i = 0; i < level; ++i)
     {
         pre += '\t';
     }
     std::cout << pre << root->to_string() << '\n';
-    if (!root->children.size())
+    if (root->children.empty())
     {
         for (int i = 0; i < root->children.size(); ++i)
         {

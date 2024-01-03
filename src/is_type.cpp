@@ -4,12 +4,12 @@
 
 bool is_int(Value *v)
 {
-    return v->getType()->isIntegerTy(32);
+    return v->getType()->isIntegerTy(INT_BITS_COUNT);
 }
 
 bool is_bool(Value *v)
 {
-    return v->getType()->isIntegerTy(1);
+    return v->getType()->isIntegerTy(BOOL_BITS_COUNT);
 }
 
 bool is_float(Value *v)
@@ -41,15 +41,12 @@ Value *create_expr_true_check(ExprNode *expr)
 
     switch (cond_type)
     {
-    case INT_TYPE: {
-        create_true_cmp<int>(expr->codegen());
-    }
-    case FLOAT_TYPE: {
-        create_true_cmp<float>(expr->codegen());
-    }
-    case BOOL_TYPE: {
-        create_true_cmp<bool>(expr->codegen());
-    }
+    case INT_TYPE:
+        return create_true_cmp<int>(expr->codegen());
+    case FLOAT_TYPE:
+        return create_true_cmp<float>(expr->codegen());
+    case BOOL_TYPE:
+        return create_true_cmp<bool>(expr->codegen());
     default:
         throw compiler_error(
             "expr type unrecognized when creating true check (unknown type: " +

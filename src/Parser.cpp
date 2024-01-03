@@ -821,7 +821,7 @@ std::unique_ptr<DeclListNode> Parser::parse_decl_list()
     {
         decl_list->addSub(parse_decl());
     }
-    assert(decl_list->children.size() > 0);
+    assert(!decl_list->children.empty());
 
     return decl_list;
 }
