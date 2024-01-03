@@ -37,8 +37,10 @@ Value *ConjunctionNode::codegen()
     // Iterate over all inner elements
     for (int i = 0; i < children.size() - 1; ++i)
     {
-        current_parent->getBasicBlockList().push_back(
-            current_block); // add previous block
+        // add previous block
+        current_parent->insert(current_parent->end(), current_block);
+        // fixme remove
+        // current_parent->getBasicBlockList().push_back(current_block);
         current_block = next_block;
         next_block = BasicBlock::Create(
             TheContext, std::string("conj_cl") +
@@ -54,7 +56,9 @@ Value *ConjunctionNode::codegen()
         Builder.CreateCondBr(
             convert_value_to_bool(children[children.size() - 1]->codegen()),
             end_block, succ_block);
-        current_parent->getBasicBlockList().push_back(next_block);
+        current_parent->insert(current_parent->end(), next_block);
+        // fixme  remove
+        // current_parent->getBasicBlockList().push_back(next_block);
     }
     // TODO check actually generates the right clause labels numbers 2..n
     // (n=number of clauses in disjunction)
@@ -63,14 +67,18 @@ Value *ConjunctionNode::codegen()
     Builder.SetInsertPoint(succ_block);
     Builder.CreateStore(Builder.getFalse(), Result);
     Builder.CreateBr(end_block);
-    current_parent->getBasicBlockList().push_back(succ_block);
+    current_parent->insert(current_parent->end(), succ_block);
+    // fixme remove
+    // current_parent->getBasicBlockList().push_back(succ_block);
 
     // finally read the value and return it
     Builder.SetInsertPoint(end_block);
     auto ret_tmp =
         Builder.CreateLoad(Type::getInt1Ty(TheContext), Result, "conj_val");
 
-    current_parent->getBasicBlockList().push_back(end_block);
+    current_parent->insert(current_parent->end(), end_block);
+    // fixme remove
+    // current_parent->getBasicBlockList().push_back(end_block);
     return ret_tmp;
 }
 
@@ -100,8 +108,10 @@ Value *DisjunctionNode::codegen()
     // Iterate over all inner elements
     for (int i = 0; i < children.size() - 1; ++i)
     {
-        current_parent->getBasicBlockList().push_back(
-            current_block); // add previous block
+        // add previous block
+        current_parent->insert(current_parent->end(), current_block);
+        // fixme remove
+        // current_parent->getBasicBlockList().push_back(current_block);
         current_block = next_block;
         next_block = BasicBlock::Create(
             TheContext, std::string("disj_cl") +
@@ -117,7 +127,9 @@ Value *DisjunctionNode::codegen()
         Builder.CreateCondBr(
             convert_value_to_bool(children[children.size() - 1]->codegen()),
             end_block, fail_block);
-        current_parent->getBasicBlockList().push_back(next_block);
+        current_parent->insert(current_parent->end(), next_block);
+        // fixme remove
+        // current_parent->getBasicBlockList().push_back(next_block);
     }
     // TODO check actually generates the right clause labels numbers 2..n
     // (n=number of clauses in disjunction)
@@ -126,14 +138,18 @@ Value *DisjunctionNode::codegen()
     Builder.SetInsertPoint(fail_block);
     Builder.CreateStore(Builder.getFalse(), Result);
     Builder.CreateBr(end_block);
-    current_parent->getBasicBlockList().push_back(fail_block);
+    current_parent->insert(current_parent->end(), fail_block);
+    // fixme remove
+    // current_parent->getBasicBlockList().push_back(fail_block);
 
     // finally read the value and return it
     Builder.SetInsertPoint(end_block);
     auto ret_tmp =
         Builder.CreateLoad(Type::getInt1Ty(TheContext), Result, "disjval");
 
-    current_parent->getBasicBlockList().push_back(end_block);
+    current_parent->insert(current_parent->end(), end_block);
+    // fixme remove
+    // current_parent->getBasicBlockList().push_back(end_block);
     return ret_tmp;
 }
 

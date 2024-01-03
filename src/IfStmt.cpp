@@ -36,7 +36,9 @@ Value *IfStmt::codegen()
     then_body->codegen();
     Builder.CreateBr(after_if);
 
-    outer_function->getBasicBlockList().push_back(after_if);
+    outer_function->insert(outer_function->end(), after_if);
+    // fixme remove
+    // outer_function->getBasicBlockList().push_back(after_if);
     Builder.SetInsertPoint(after_if);
     return Builder.getTrue();
 }
