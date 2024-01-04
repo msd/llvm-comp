@@ -1,8 +1,8 @@
 #pragma once
 
-#include "llvm/IR/Value.h"
 #include <cstdint>
 #include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/Value.h>
 
 #include "ExprNode.hpp"
 #include "the_externs.hpp"
@@ -52,6 +52,11 @@ struct IntValues
     [[nodiscard]] inline static auto type()
     {
         return Type::getInt32Ty(TheContext);
+    }
+
+    [[nodiscard]] inline static auto fromBoolV(Value *V)
+    {
+        return Builder.CreateBitCast(V, type());
     }
 
     [[nodiscard]] inline static auto get(uint64_t x, bool signed_)

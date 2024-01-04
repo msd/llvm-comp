@@ -1,3 +1,5 @@
+#include <cstdlib>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -47,6 +49,11 @@ std::stack<VariableScope *> ActiveScopes;
 // AST Printer
 //===----------------------------------------------------------------------===//
 
+void write_header(std::string path)
+{
+    std::ifstream file{path};
+}
+
 inline llvm::raw_ostream &operator<<(llvm::raw_ostream &os, const ASTnode &ast)
 {
     os << ast.to_string();
@@ -79,36 +86,63 @@ static void print_ast(ASTnode *root, int level = 0)
 // Main driver code.
 //===----------------------------------------------------------------------===//
 
-inline std::string path_no_extension(std::string path)
+std::optional<size_t> str_rfind(std::string const &haystack, char needle)
 {
-    auto i = path.rfind('.');
+    auto i = haystack.rfind(needle);
     if (i == std::string::npos)
     {
-        return path;
+        return {};
     }
-    return path.substr(0, i);
+    return i;
 }
 
-std::string output_path(std::string input_path)
+inline std::string without_no_extension(std::string path)
 {
-    return path_no_extension(input_path) + ".ll";
+    return str_rfind(path, '.')
+        .transform([&path](size_t i) { return path.substr(0, i); })
+        .value_or(path);
+    ;
 }
 
-int main(int argc, char **argv)
+struct program_args
+{
+    std::string file_path{};
+    std::optional<std::string> output_path_provided{};
+
+    // returns the input file path with the extension changed to '.ll'
+    // depends on file_path
+    [[nodiscard]] std::string default_output_path() const
+    {
+        return without_no_extension(file_path) + ".ll";
+    }
+
+    [[nodiscard]] std::string output_path() const
+    {
+        return output_path_provided.value_or(default_output_path());
+    }
+};
+
+std::optional<program_args> parse_args(std::span<char *> argStrings)
+{
+    if (argStrings.size() != 2)
+    {
+        return {};
+    }
+    std::string file_path{argStrings[1]};
+
+    return program_args{
+        .file_path = file_path,
+        .output_path_provided = {},
+    };
+}
+
+int main2(program_args args)
 {
     auto globalScope = VariableScope();
 
     ActiveScopes.push(&globalScope);
 
-    if (argc != 2)
-    {
-        std::string compilerPath = argv[0];
-        std::cout << "Usage: " << compilerPath << " InputFile\n";
-        return 1;
-    }
-
-    std::string file_path = argv[1];
-    auto source_file = std::make_unique<std::ifstream>(file_path);
+    auto source_file = std::make_unique<std::ifstream>(args.file_path);
     Tokenizer tok{std::move(source_file)};
 
     Parser parser{&tok};
@@ -149,9 +183,8 @@ int main(int argc, char **argv)
 
     //********************* Start printing final IR **************************
     // Print out all of the generated code into a file called output.ll
-    auto output_filepath = output_path(file_path);
     std::error_code EC;
-    raw_fd_ostream dest(output_filepath, EC, sys::fs::OF_None);
+    raw_fd_ostream dest(args.output_path(), EC, sys::fs::OF_None);
 
     if (EC)
     {
@@ -162,5 +195,31 @@ int main(int argc, char **argv)
     TheModule->print(dest, nullptr);
     //********************* End printing final IR ****************************
 
-    return 0;
+    return EXIT_SUCCESS;
+}
+
+int main(int argc, char **argv)
+{
+
+    int const constexpr ERR_INVALID_ARGUMENTS = 2;
+    auto args = parse_args(std::span{argv, static_cast<size_t>(argc)});
+
+    if (!args)
+    {
+        std::string compilerPath =
+            argc > 1 && argv[0] != nullptr ? argv[0] : "my_compiler";
+        std::cout << "Usage: " << compilerPath << " InputFile\n";
+        return ERR_INVALID_ARGUMENTS;
+    }
+
+    try
+    {
+        return main2(*args);
+    }
+    catch (std::exception &ex)
+    {
+        std::cerr << "[E] Error: Unhandled exception\n"
+                  << ex.what() << std::endl;
+    }
+    return EXIT_FAILURE;
 }

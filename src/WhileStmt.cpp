@@ -7,14 +7,12 @@ Value *WhileStmt::codegen()
 {
     auto outer_function = Builder.GetInsertBlock()->getParent();
 
-    Builder.GetInsertBlock()->getParent();
-
     auto while_cond =
-        BasicBlock::Create(TheContext, "while_cond", outer_function);
+        BasicBlock::Create(TheContext, "whileCond", outer_function);
     auto while_loop =
-        BasicBlock::Create(TheContext, "while_loop", outer_function);
+        BasicBlock::Create(TheContext, "whileLoop", outer_function);
     auto after_while =
-        BasicBlock::Create(TheContext, "after_while", outer_function);
+        BasicBlock::Create(TheContext, "endWhile", outer_function);
 
     Builder.SetInsertPoint(while_cond);
     auto comparison = create_expr_true_check(this->condition());
