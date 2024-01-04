@@ -2,28 +2,27 @@
 
 #include "the_externs.hpp"
 
+#include <string>
+
+#include "comparisons.hpp"
+
 Value *NegationNode::codegen()
 {
     auto negatee_type = negatee()->expr_type();
 
     if (negatee_type == INT_TYPE)
     {
-        auto Z = ConstantInt::get(Type::getInt32Ty(TheContext), 0, true);
-        return Builder.CreateSub(Z, negatee()->codegen());
+        return Builder.CreateSub(IntValues::Zero(), negatee()->codegen());
     }
-    else if (negatee_type == FLOAT_TYPE)
+    if (negatee_type == FLOAT_TYPE)
     {
         return Builder.CreateFNeg(negatee()->codegen());
     }
-    else if (negatee_type == BOOL_TYPE)
+    if (negatee_type == BOOL_TYPE)
     {
-        auto C = Builder.CreateBitCast(negatee()->codegen(),
-                                       Type::getInt32Ty(TheContext));
-        auto Z = ConstantInt::get(Type::getInt32Ty(TheContext), 0, true);
-        return Builder.CreateSub(Z, C);
+        auto C = Builder.CreateBitCast(negatee()->codegen(), IntValues::type());
+        return Builder.CreateSub(IntValues::Zero(), C);
     }
-    else
-    {
-        return nullptr;
-    }
+    using std::to_string;
+    throw compiler_error("cannot negate expr-type: " + to_string(negatee_type));
 }

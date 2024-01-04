@@ -3,6 +3,7 @@
 #include "ValidTypes.hpp"
 #include "coercion.hpp"
 #include "the_externs.hpp"
+#include <llvm/ADT/STLExtras.h>
 
 Value *OpMULT::codegen()
 {
@@ -15,12 +16,15 @@ Value *OpMULT::codegen()
         R = convert_value_to_float(R);
         return Builder.CreateFMul(L, R);
     }
-    else if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
+
+    if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
     {
         L = convert_value_to_int(L);
         R = convert_value_to_int(R);
         return Builder.CreateMul(L, R);
     }
+
+    // both bools
     return Builder.CreateMul(L, R);
 }
 
@@ -35,12 +39,15 @@ Value *OpADD::codegen()
         R = convert_value_to_float(R);
         return Builder.CreateFAdd(L, R);
     }
-    else if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
+
+    if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
     {
         L = convert_value_to_int(L);
         R = convert_value_to_int(R);
         return Builder.CreateAdd(L, R);
     }
+
+    // both bools
     return Builder.CreateAdd(L, R);
 }
 
@@ -55,12 +62,15 @@ Value *OpDIV::codegen()
         R = convert_value_to_float(R);
         return Builder.CreateFDiv(L, R);
     }
-    else if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
+
+    if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
     {
         L = convert_value_to_int(L);
         R = convert_value_to_int(R);
         return Builder.CreateSDiv(L, R);
     }
+
+    // both bools
     return Builder.CreateSDiv(L, R);
 }
 
@@ -82,12 +92,15 @@ Value *OpSUB::codegen()
         R = convert_value_to_float(R);
         return Builder.CreateFSub(L, R);
     }
-    else if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
+
+    if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
     {
         L = convert_value_to_int(L);
         R = convert_value_to_int(R);
         return Builder.CreateSub(L, R);
     }
+
+    // both bools
     return Builder.CreateSub(L, R);
 }
 
@@ -102,7 +115,8 @@ Value *OpEQ::codegen()
         R = convert_value_to_float(R);
         return Builder.CreateFCmpUEQ(L, R);
     }
-    else if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
+
+    if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
     {
         if (l_type == BOOL_TYPE)
         {
@@ -114,11 +128,14 @@ Value *OpEQ::codegen()
         }
         return Builder.CreateICmpEQ(L, R);
     }
+
+    // both bools
     return Builder.CreateICmpEQ(L, R);
 }
 
 Value *OpNE::codegen()
 {
+    // promote_types(lhs(), rhs());
     auto L = lhs()->codegen(), R = rhs()->codegen();
     auto l_type = lhs()->expr_type(), r_type = rhs()->expr_type();
 
@@ -128,7 +145,7 @@ Value *OpNE::codegen()
         R = convert_value_to_float(R);
         return Builder.CreateFCmpUNE(L, R);
     }
-    else if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
+    if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
     {
         if (l_type == BOOL_TYPE)
         {
@@ -154,12 +171,15 @@ Value *OpLE::codegen()
         R = convert_value_to_float(R);
         return Builder.CreateFCmpULE(L, R);
     }
-    else if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
+
+    if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
     {
         L = convert_value_to_int(L);
         R = convert_value_to_int(R);
         return Builder.CreateICmpSLE(L, R);
     }
+
+    // both bools
     return Builder.CreateICmpULE(L, R);
 }
 
@@ -174,12 +194,15 @@ Value *OpGE::codegen()
         R = convert_value_to_float(R);
         return Builder.CreateFCmpUGE(L, R);
     }
-    else if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
+
+    if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
     {
         L = convert_value_to_int(L);
         R = convert_value_to_int(R);
         return Builder.CreateICmpSGE(L, R);
     }
+
+    // both bools
     return Builder.CreateICmpUGE(L, R);
 }
 
@@ -194,12 +217,15 @@ Value *OpGT::codegen()
         R = convert_value_to_float(R);
         return Builder.CreateFCmpUGT(L, R);
     }
-    else if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
+
+    if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
     {
         L = convert_value_to_int(L);
         R = convert_value_to_int(R);
         return Builder.CreateICmpSGT(L, R);
     }
+
+    // both bools
     return Builder.CreateICmpUGT(L, R);
 }
 
@@ -228,7 +254,8 @@ Value *OpLT::codegen()
         }
         return Builder.CreateFCmpULT(L, R);
     }
-    else if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
+
+    if ((l_type == INT_TYPE) || (r_type == INT_TYPE))
     {
         if (l_type == BOOL_TYPE)
         {
@@ -240,6 +267,8 @@ Value *OpLT::codegen()
         }
         return Builder.CreateICmpSLT(L, R);
     }
+
+    // both bools
     return Builder.CreateICmpULT(L, R);
 }
 

@@ -17,7 +17,7 @@ Value *float_cmp_zero(Value *val, Twine const &label = "floatzcmptmp")
 Type *type_homebrew_to_llvm(char type)
 {
     // todo change to use llvm types instead of homebrew
-    switch (type)
+    switch (type) // NOLINT(*missing-default-case)
     {
     case INT_TYPE:
         return IntValues::type();
@@ -56,7 +56,7 @@ template <>
 {
     auto cond_type = expr->expr_type();
 
-    switch (cond_type)
+    switch (cond_type) // NOLINT(*missing-default-case)
     {
     case INT_TYPE:
         return create_true_cmp<int>(expr->codegen());

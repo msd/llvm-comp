@@ -4,6 +4,8 @@
 #include "BlockNode.hpp"
 #include "ExprNode.hpp"
 
+Value *compare_condition(Value *cond_v);
+
 class IfStmt : public ASTnode
 {
   public:
