@@ -1,4 +1,5 @@
 !IMPORTANT should not be able to define variables with the same name as one of the parameters
+!IMPORTANT parameters are not usable
 
 handle empty function body when codegening
 
