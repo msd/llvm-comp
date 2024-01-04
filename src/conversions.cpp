@@ -20,16 +20,16 @@ Type *type_homebrew_to_llvm(char type)
     switch (type)
     {
     case INT_TYPE:
-        return Type::getInt32Ty(TheContext);
+        return IntValues::type();
 
     case FLOAT_TYPE:
-        return Type::getFloatTy(TheContext);
+        return FloatValues::type();
 
     case VOID_TYPE:
         return Type::getVoidTy(TheContext);
 
     case BOOL_TYPE:
-        return Type::getInt1Ty(TheContext);
+        return BoolValues::type();
     }
     throw std::runtime_error("invalid type received");
 };
@@ -64,9 +64,8 @@ template <>
         return create_true_cmp<float>(expr->codegen());
     case BOOL_TYPE:
         return create_true_cmp<bool>(expr->codegen());
-    default:
-        throw compiler_error(
-            "expr type unrecognized when creating true check (unknown type: " +
-            std::to_string(cond_type) + ")");
     }
+    throw compiler_error(
+        "expr type unrecognized when creating true check (unknown type: " +
+        std::to_string(cond_type) + ")");
 }
