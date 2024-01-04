@@ -2,7 +2,7 @@
 
 #include "ValidTypes.hpp"
 #include "coercion.hpp"
-#include "conversions.hpp"
+#include "comparisons.hpp"
 #include "the_externs.hpp"
 
 Value *NotNode::codegen()

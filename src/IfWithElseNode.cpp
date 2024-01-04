@@ -1,6 +1,6 @@
 #include "IfWithElseNode.hpp"
 
-#include "conversions.hpp"
+#include "comparisons.hpp"
 #include "is_type.hpp"
 #include "the_externs.hpp"
 
@@ -28,8 +28,8 @@ Value *IfWithElseNode::codegen()
     Value *comparison = compare_condition(cond->codegen());
 
     auto then_block = BasicBlock::Create(TheContext, "then", outer_function);
-    auto else_block = BasicBlock::Create(TheContext, "else");
-    auto merge_block = BasicBlock::Create(TheContext, "ifcont");
+    auto else_block = BasicBlock::Create(TheContext, "else", outer_function);
+    auto merge_block = BasicBlock::Create(TheContext, "ifcont", outer_function);
 
     Builder.CreateCondBr(comparison, then_block, else_block);
 
@@ -39,16 +39,10 @@ Value *IfWithElseNode::codegen()
     Builder.CreateBr(merge_block);
 
     // Emit else body
-    outer_function->insert(outer_function->end(), else_block);
-    // fixme remove
-    // outer_function->getBasicBlockList().push_back(else_block);
     Builder.SetInsertPoint(else_block);
     else_body->codegen();
     Builder.CreateBr(merge_block);
 
-    outer_function->insert(outer_function->end(), merge_block);
-    // fixme remove
-    // outer_function->getBasicBlockList().push_back(merge_block);
     Builder.SetInsertPoint(merge_block);
     return merge_block;
 }
