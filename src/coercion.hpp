@@ -12,18 +12,7 @@ extern llvm::Value *convert_value_to_int(llvm::Value *val);
 extern llvm::Value *convert_value_to_float(llvm::Value *val);
 extern llvm::Value *convert_value_to_bool(llvm::Value *val);
 
-struct IntProxy
-{
-};
-struct BoolProxy
-{
-};
-struct FloatProxy
-{
-};
-
 template <typename To> inline llvm::Value *convert_value_to(llvm::Value *value);
-template <> inline llvm::Value *convert_value_to<IntProxy>(llvm::Value *value);
-template <>
-inline llvm::Value *convert_value_to<FloatProxy>(llvm::Value *value);
-template <> inline llvm::Value *convert_value_to<BoolProxy>(llvm::Value *value);
+template <> inline llvm::Value *convert_value_to<int>(llvm::Value *value);
+template <> inline llvm::Value *convert_value_to<float>(llvm::Value *value);
+template <> inline llvm::Value *convert_value_to<bool>(llvm::Value *value);

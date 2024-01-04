@@ -4,18 +4,14 @@
 #include "ValidTypes.hpp"
 #include "the_externs.hpp"
 
-Value *int_cmp_zero(Value *val)
+Value *int_cmp_zero(Value *val, Twine const &label = "intzcmptmp")
 {
-    auto Z = ConstantInt::get(Type::getInt32Ty(TheContext), 0, true);
-
-    return Builder.CreateICmpEQ(val, Z, "intzcmptmp");
+    return Builder.CreateICmpEQ(val, IntValues::Zero(), label);
 }
 
-Value *float_cmp_zero(Value *val)
+Value *float_cmp_zero(Value *val, Twine const &label = "floatzcmptmp")
 {
-    auto Z = ConstantFP::get(Type::getFloatTy(TheContext), 0.0f);
-
-    return Builder.CreateFCmpUEQ(val, Z, "floatzcmptmp");
+    return Builder.CreateFCmpUEQ(val, FloatValues::Zero(), label);
 }
 
 Type *type_homebrew_to_llvm(char type)
@@ -41,22 +37,19 @@ Type *type_homebrew_to_llvm(char type)
 template <>
 [[nodiscard]] Value *create_true_cmp<int>(Value *expr, Twine const &name)
 {
-    auto Z = ConstantInt::get(Type::getInt32Ty(TheContext), 0, true);
-    return Builder.CreateICmpNE(expr, Z, name);
+    return Builder.CreateICmpNE(expr, IntValues::Zero(), name);
 }
 
 template <>
 [[nodiscard]] Value *create_true_cmp<bool>(Value *expr, Twine const &name)
 {
-    auto Z = ConstantInt::get(Type::getInt1Ty(TheContext), 0, false);
-    return Builder.CreateICmpNE(expr, Z, name);
+    return Builder.CreateICmpNE(expr, BoolValues::False(), name);
 }
 
 template <>
 [[nodiscard]] Value *create_true_cmp<float>(Value *expr, Twine const &name)
 {
-    auto Z = ConstantFP::get(Type::getFloatTy(TheContext), 0.0);
-    return Builder.CreateFCmpUNE(expr, Z, name);
+    return Builder.CreateFCmpUNE(expr, FloatValues::Zero(), name);
 }
 
 [[nodiscard]] Value *create_expr_true_check(ExprNode *expr)

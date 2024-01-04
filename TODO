@@ -1,3 +1,5 @@
+!IMPORTANT should not be able to define variables with the same name as one of the parameters
+
 handle empty function body when codegening
 
 check all branches return a value

@@ -3,7 +3,6 @@
 #include "conversions.hpp"
 #include "is_type.hpp"
 #include "the_externs.hpp"
-#include <stdexcept>
 
 static auto compare_condition(Value *cond_v)
 {
